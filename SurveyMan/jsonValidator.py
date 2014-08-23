@@ -1,21 +1,12 @@
-from jsonschema import validate
-import json
+import jsonschema
+import urllib2
 
-def validateJSON(schemaFile, jsonFile):
-    s = open(schemaFile)
-    schemaText = s.read();
-    #print schemaText
-    dataform = str(schemaText).strip("'<>()[]\"` ").replace('\'', '\"')
-    schema = json.loads(dataform);
-    s.close;
-    j = open(jsonFile, "r")
-    jsonText = j.read()
-    #print json
-    j.close()
-    validate(jsonText, schema)
+input_schema = "http://surveyman.github.io/Schemata/survey_input.json"
 
-def main():
-    validateJSON("survey-temp.JSON","survey1.JSON");
-
-if  __name__ =='__main__':
-    main()
+def validateJSON(instance):
+    """
+    Validates the input jsonFile against the current json schema provided at `http://surveyman.github.io/Schemata/survey_input.json`
+    :param jsonFile:
+    """
+    schema = urllib2.urlopen(input_schema).read()
+    jsonschema.validate(instance, schema)

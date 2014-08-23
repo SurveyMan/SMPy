@@ -1,9 +1,9 @@
 import unittest
-from SurveyMan.survey.survey_representation import *
-from SurveyMan.survey.survey_exceptions import * 
-import SurveyMan.examples.subblock_example as sbEx
-import SurveyMan.examples.example_survey as ex
-import SurveyMan.examples.SimpleSurvey as simpEx
+from surveyman.survey.survey_representation import *
+import surveyman.examples.subblock_example as sbEx
+import surveyman.examples.example_survey as ex
+import surveyman.examples.SimpleSurvey as simpEx
+
 
 class BlockTests(unittest.TestCase):
 

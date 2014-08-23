@@ -2,8 +2,8 @@
 #example survey based on https://github.com/etosch/SurveyMan/blob/master/data/Ipierotis.csv
 #outputs JSON representation
 
-from SurveyMan.survey.survey_representation import *
-from SurveyMan.survey.survey_exceptions import * 
+from surveyman.survey.survey_representation import *
+from surveyman.survey.survey_exceptions import *
 
 def createSurvey():
     #question 1
@@ -154,7 +154,7 @@ def createSurvey():
     
     survey = Survey([block1, block2, block3], [branch1])
 
-##    jsonfile = open("survey1.JSON", "wb")
+##    jsonfile = open("survey1.json", "wb")
 ##    jsonfile.write(survey.jsonize())
 ##    jsonfile.close()
 

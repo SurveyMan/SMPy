@@ -1,14 +1,13 @@
 import unittest
-from SurveyMan.survey.survey_representation import *
-from SurveyMan.survey.survey_exceptions import *
-import SurveyMan.examples.subblock_example as subEx
-import SurveyMan.examples.example_survey as exSurv
-import SurveyMan.examples.SimpleSurvey as simpSurv
-import SurveyMan.examples.TwoBranchesOneBlock as twob1b
-import SurveyMan.examples.TwoBranchesOneBlock2 as twob2b2
-import SurveyMan.examples.TwoBranchesOneSubblock2 as twob1sub
-import SurveyMan.examples.BackwardsBranching as backwards
-import SurveyMan.examples.BranchToSubblock as branch2sub
+from surveyman.survey.survey_exceptions import *
+import surveyman.examples.subblock_example as subEx
+import surveyman.examples.example_survey as exSurv
+import surveyman.examples.SimpleSurvey as simpSurv
+import surveyman.examples.TwoBranchesOneBlock as twob1b
+import surveyman.examples.TwoBranchesOneBlock2 as twob2b2
+import surveyman.examples.TwoBranchesOneSubblock2 as twob1sub
+import surveyman.examples.BackwardsBranching as backwards
+import surveyman.examples.BranchToSubblock as branch2sub
 
 
 class ConstraintTests(unittest.TestCase):
