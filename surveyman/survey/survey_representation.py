@@ -218,6 +218,7 @@ class TextOption(Option):
 class HTMLOption(Option):
 
     def __init__(self, opHTML):
+
         document, errors = tidy_fragment("<!DOCTYPE html><html><head><title></title><body>%s</body></html>" % opHTML)
         # python is stupid
         if len(errors) > 1:

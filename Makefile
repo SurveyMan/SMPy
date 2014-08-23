@@ -10,7 +10,9 @@ deps:
 	pip install pytidylib
 
 test: deps
-	echo `ls`
+	pip --version
+	pip show jsonschema
+	pip show pytidylib
 	python -m surveyman.test
 
 package:
