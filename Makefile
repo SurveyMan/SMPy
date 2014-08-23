@@ -10,7 +10,7 @@ deps :
 	pip install matplotlib	
 	pip install jsonschema
 
-test :
+test : deps
 	python -m surveyman.test
 
 package :
