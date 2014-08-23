@@ -9,6 +9,7 @@ deps:
 	pip install jsonschema
 
 test: deps
+	echo `ls`
 	python -m surveyman.test
 
 package:
