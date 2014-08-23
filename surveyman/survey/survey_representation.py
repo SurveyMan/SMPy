@@ -1,8 +1,11 @@
 #requires Python 2.7.5
 #attempt at survey representation
+import json
 from survey_exceptions import *
+from abc import ABCMeta
+from tidylib import tidy_fragment
 
-class idGenerator:
+class IdGenerator:
     """
     Generates ids for survey components; component prefixes are passed as arguments
     (op=option id, s=survey id, q=question id, b=block id, c=constraint id)
@@ -16,11 +19,11 @@ class idGenerator:
         self.numAssigned+=1
         return self.prefix+str(self.numAssigned)
 
-opGen = idGenerator("op")
-surveyGen = idGenerator("s")
-qGen = idGenerator("q")
-blockGen = idGenerator("b")
-constraintGen = idGenerator("c")
+opGen = IdGenerator("comp_")
+surveyGen = IdGenerator("s")
+qGen = IdGenerator("q_")
+blockGen = IdGenerator("b")
+constraintGen = IdGenerator("c")
 
 class Survey:
     """
@@ -157,7 +160,7 @@ class Question:
         adds it at the desired index in the question's option list
         throws exception if index is out of list's range
         """
-        o = Option(oText)
+        o = Option(otext)
         self.options.insert(index, o)
 
     def equals(self, q2):
@@ -178,7 +181,7 @@ class Question:
             output = "{'id' : '%s', 'qtext' : '%s', 'options' : [%s], 'branchMap' : %s}"%(self.qid, self.qtext, ",".join([o.jsonize() for o in self.options]), self.branchMap.jsonize())
         else:   
             output = "{'id' : '%s', 'qtext' : '%s', 'options' : [%s]}"%(self.qid, self.qtext, ",".join([o.jsonize() for o in self.options]))
-        output = output.replace('\'', '\"');
+        output = output.replace('\'', '\"')
         return output
 
 class Option:
@@ -186,27 +189,44 @@ class Option:
     Contains the components of an option:
     An option has associated text
     """
-    
+    __metaclass__ = ABCMeta
+
     def __init__(self, opText):
         """creates an Option object with a unique id and the specified option text"""
         #initialize option text field
-        self.opText=opText
+        self.opText = opText
         #generate id for option
-        self.opid=opGen.generateID()
+        self.opId = opGen.generateID()
 
     def equals(self, o2):
         """determines if option object is the same option as another object"""
-        return self.opid==o2.opid
+        return self.opId==o2.opId
 
     def jsonize(self):
         """returns the JSON representation of the option"""
-        output = "{'id' : '%s', 'otext' : '%s' }" %(self.opid, self.opText)
-        output = output.replace('\'', '\"');
-        return output
+        return json.dumps({"id" : self.opId, "otext" : self.opText})
         
     def __str__(self):
         """returns the string representation of the option"""
         return self.opText
+
+
+class TextOption(Option):
+    pass
+
+
+class HTMLOption(Option):
+
+    def __init__(self, opHTML):
+        document, errors = tidy_fragment("<!DOCTYPE html><html><head><title></title><body>%s</body></html>" % opHTML)
+        # python is stupid
+        if len(errors) > 1:
+            print errors
+            raise HTMLValidationExeception()
+        else:
+            Option.__init__(self, opHTML)
+
+
 
 class Block:
     """
@@ -378,7 +398,7 @@ class Constraint:
         #holds list of tuples (opid, blockid)
         self.constraintMap = []
         for o in self.question.options:
-            self.constraintMap.append((o.opid, "NEXT"))
+            self.constraintMap.append((o.opId, "NEXT"))
 
     def addBranchByIndex(self, opIndex, block):
         """
@@ -387,7 +407,7 @@ class Constraint:
         Throws an exception if the index is out of the option list's range.
         """
         #throws index out of bounds exception
-        self.constraintMap[opIndex] =(self.question.options[opIndex].opid, block.blockid)
+        self.constraintMap[opIndex] =(self.question.options[opIndex].opId, block.blockid)
 
     def addBranch(self, op, block):
         """
@@ -399,7 +419,7 @@ class Constraint:
             if self.question.options[i].equals(op):
                 self.constraintMap[i] = (op.opid, block.blockid)
                 return
-        noOp = NoSuchOptionException("Question "+self.question.quid+" does not contain option "+opID)
+        noOp = NoSuchOptionException("Question "+self.question.quid+" does not contain option "+op.id)
         raise noOp()
 
     def addBranchByOpText(self, opText, block):
@@ -410,7 +430,7 @@ class Constraint:
         """
         for i in range(len(self.question.options)):
             if self.question.options[i].opText==opText:
-                self.constraintMap[i] = (self.question.options[i].opid, block.blockid)
+                self.constraintMap[i] = (self.question.options[i].opId, block.blockid)
                 return
         noOp = NoSuchOptionException("Question "+self.question.quid+" does not contain option \""+opText+'\"')
         raise noOp()
@@ -447,14 +467,6 @@ class Constraint:
         output= output.replace('[','{')
         output = output.replace(']','}')
         return output
-        
-        
-def main():
-    pass
-    
-    
-if  __name__ =='__main__':
-    main()
 
 
     

@@ -7,6 +7,7 @@ projectdir = $(shell pwd)
 
 deps:
 	pip install jsonschema
+	pip install pytidylib
 
 test: deps
 	echo `ls`

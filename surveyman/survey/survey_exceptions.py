@@ -24,6 +24,9 @@ class NoSuchQuestionException(ExceptionTemplate):
 class NoSuchOptionException(ExceptionTemplate):
     pass
 
+class HTMLValidationExeception(ExceptionTemplate):
+    pass
+
 def main():
     survey_exception = SurveyException("survey exception raised");
     raise survey_exception();

@@ -1,3 +1,4 @@
+__author__ = "mmcmahon13"
 import unittest
 from surveyman.survey.survey_exceptions import *
 import surveyman.examples.subblock_example as subEx
