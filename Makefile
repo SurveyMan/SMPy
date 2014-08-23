@@ -3,19 +3,21 @@ projectdir = $(shell pwd)
 
 # this line clears ridiculous number of default rules
 .SUFFIXES:
-.PHONY : deps test package distr
+.PHONY: deps test package distr
 
-deps :
-	pip install numpy
-	pip install matplotlib	
+deps:
 	pip install jsonschema
 
-test : deps
+test: deps
 	python -m surveyman.test
 
-package :
+package:
 	python setup.py sdist
 
-distr : package
+distr: package
 	python setup.py register
 	python setup.py sdist upload
+
+travis:
+	python setup.py install
+	python -m surveyman.test
