@@ -7,3 +7,4 @@ import SurveyTests
 unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(BlockTests.BlockTests))
 unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(ConstraintTests.ConstraintTests))
 unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(SurveyTests.OptionTests))
+unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(SurveyTests.QuestionTests))

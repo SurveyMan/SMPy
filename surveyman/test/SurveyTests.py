@@ -11,11 +11,11 @@ class SurveyTests(unittest.TestCase):
 class QuestionTests(unittest.TestCase):
 
     def setUp(self):
-        self.q1 = Question("oneof", "", [Option(a) for a in range(4)])
+        self.q1 = Question("oneof", "", [Option(str(a)) for a in range(4)])
         self.q2 = Instruction("")
 
     def test_question_types(self):
-        self.assertRaises(NoSuchQuestionTypeException, Question, ["rank", "blah"])
+        self.assertRaises(NoSuchQuestionTypeException, Question, "rank", "blah")
 
     def test_add_option(self):
         self.q1.add_option("")
@@ -27,9 +27,17 @@ class QuestionTests(unittest.TestCase):
         self.q1.add_option_by_index(2, opt1)
         self.assertEqual(self.q1.options.index(opt1), 2)
         ct = len(self.q1.options)
-        self.q1.add_option_by_index(ct+4, opt2)
-        self.assertEqual(len(self.q1.options), ct+4)
-        self.assertEqual(self.q1.options.index(opt2), ct+4)
+        index = ct+4
+        self.q1.add_option_by_index(index, opt2)
+        self.assertEqual(len(self.q1.options), index+1)
+        self.assertEqual(self.q1.options.index(opt2), index)
+
+    def test_jsonize(self):
+        json1 = json.loads(self.q1.jsonize())
+        validator.validateJSON(json1, schema=validator.question_schema)
+        print self.q2.jsonize()
+        json2 = json.loads(self.q2.jsonize())
+        validator.validateJSON(json2, schema=validator.question_schema)
 
 
 class OptionTests(unittest.TestCase):

@@ -4,6 +4,8 @@ import urllib2
 
 input_schema = "http://surveyman.github.io/Schemata/survey_input.json"
 option_schema = "http://surveyman.github.io/Schemata/survey_option.json"
+question_schema = "http://surveyman.github.io/Schemata/survey_question.json"
+
 
 def validateJSON(instance, schema=input_schema, url=True):
     """
