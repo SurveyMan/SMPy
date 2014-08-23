@@ -1,29 +1,13 @@
 #requires Python 2.7.5
 #attempt at survey representation
-import json
-from survey_exceptions import *
-from abc import ABCMeta
-from tidylib import tidy_fragment
 
-class IdGenerator:
-    """
-    Generates ids for survey components; component prefixes are passed as arguments
-    (op=option id, s=survey id, q=question id, b=block id, c=constraint id)
-    """
-    def __init__(self, prefix):
-        self.numAssigned=0
-        self.prefix=prefix
-        
-    def generateID(self):
-        """Generates a new component id with the appropriate prefix"""
-        self.numAssigned+=1
-        return self.prefix+str(self.numAssigned)
+from __ids__ import *
+from surveyman.survey.questions import *
 
-opGen = IdGenerator("comp_")
 surveyGen = IdGenerator("s")
-qGen = IdGenerator("q_")
 blockGen = IdGenerator("b")
 constraintGen = IdGenerator("c")
+
 
 class Survey:
     """
@@ -87,7 +71,7 @@ class Survey:
                         surveyHasBlock = True
                         break
                 if surveyHasBlock == False:
-                    badBranch = InvalidBranchException("Question "+c.question.qtext+" does not branch to a block in survey")
+                    badBranch = InvalidBranchException("Question "+c.question.qText+" does not branch to a block in survey")
                     raise badBranch()
             
         #check that all branches branch forward 
@@ -98,7 +82,7 @@ class Survey:
             surveyBlockIds = [b.blockid for b in self.blockList]
             for bid in c.getBlocks():
                 if(bid !="NEXT" and surveyBlockIds.index(blockID)>=surveyBlockIds.index(bid)):
-                    badBranch = InvalidBranchException("Question "+branchQuestion.qtext+" does not branch forward")
+                    badBranch = InvalidBranchException("Question "+branchQuestion.qText+" does not branch forward")
                     raise badBranch()
         
     def __str__(self):
@@ -119,113 +103,6 @@ class Survey:
         output = "{'breakoff' : '%s', 'survey' : [%s] }" %(breakoff, ",".join([b.jsonize() for b in self.blockList]))
         output = output.replace("\'", "\"")
         return output
-    
-class Question:
-    """
-    Contains the components of a survey question:
-    Question type is either "radio", "dropdown", "check", or "freetext"
-    Question contains text and options, and can be shuffled in a block or fixed
-    A question may contain a branchmap
-    """
-
-    def __init__(self, qtype, qtext, options, shuffle=True):
-        """
-        Creates a Question object with a unique id
-        Question type, text, and a list of options must be specified
-            (option list may be empty)
-        Shuffling is allowed by default; user must specify otherwise
-        """
-        #initialize variables depending on how many arguments provided
-        #if you don't want to add options immediately, add empty list as argument
-        #call generateID
-        self.qid = qGen.generateID()
-        self.qtype = qtype
-        self.qtext = qtext
-        self.options = options
-        self.shuffle = shuffle
-        self.branching = False
-        self.block = "none"
-
-    def addOption(self, oText):
-        """
-        Creates Option with specified text
-        adds it to the end of the question's option list
-        """
-        o = Option(oText)
-        self.options.append(o)
-
-    def addOptionByIndex(self, index, otext):
-        """
-        Creates Option with specified text
-        adds it at the desired index in the question's option list
-        throws exception if index is out of list's range
-        """
-        o = Option(otext)
-        self.options.insert(index, o)
-
-    def equals(self, q2):
-        """determines if question object is the same question as another object"""
-        return self.qid==q2.qid
-        
-    def __str__(self):
-        """returns string representation of the question"""
-        text = "Question ID: "+str(self.qid)+" Question type: "+self.qtype+"\n"
-        text = text + self.qtext + "\n"
-        for o in self.options:
-            text = text + "\t" + str(o) + "\n"
-        return text
-
-    def jsonize(self):
-        """returns JSON representation of the question"""
-        if hasattr(self, "branchMap"):
-            output = "{'id' : '%s', 'qtext' : '%s', 'options' : [%s], 'branchMap' : %s}"%(self.qid, self.qtext, ",".join([o.jsonize() for o in self.options]), self.branchMap.jsonize())
-        else:   
-            output = "{'id' : '%s', 'qtext' : '%s', 'options' : [%s]}"%(self.qid, self.qtext, ",".join([o.jsonize() for o in self.options]))
-        output = output.replace('\'', '\"')
-        return output
-
-class Option:
-    """
-    Contains the components of an option:
-    An option has associated text
-    """
-    __metaclass__ = ABCMeta
-
-    def __init__(self, opText):
-        """creates an Option object with a unique id and the specified option text"""
-        #initialize option text field
-        self.opText = opText
-        #generate id for option
-        self.opId = opGen.generateID()
-
-    def equals(self, o2):
-        """determines if option object is the same option as another object"""
-        return self.opId==o2.opId
-
-    def jsonize(self):
-        """returns the JSON representation of the option"""
-        return json.dumps({"id" : self.opId, "otext" : self.opText})
-        
-    def __str__(self):
-        """returns the string representation of the option"""
-        return self.opText
-
-
-class TextOption(Option):
-    pass
-
-
-class HTMLOption(Option):
-
-    def __init__(self, opHTML):
-
-        document, errors = tidy_fragment("<!DOCTYPE html><html><head><title></title><body>%s</body></html>" % opHTML)
-        # python is stupid
-        if len(errors) > 1:
-            print errors
-            raise HTMLValidationExeception()
-        else:
-            Option.__init__(self, opHTML)
 
 
 

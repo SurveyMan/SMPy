@@ -2,6 +2,8 @@
 #outputs JSON representation
 
 from surveyman.survey.survey_representation import *
+from surveyman.survey.questions import *
+
 
 def create_survey():
 
@@ -9,20 +11,20 @@ def create_survey():
 
     oneof = "oneof"
     
-    q1 = Question(oneof,"Block 1a", [])
-    q1.addOption("a")
-    q1.addOption("b")
+    q1 = Question(oneof, "Block 1a", [])
+    q1.add_option("a")
+    q1.add_option("b")
 
     b1.addQuestion(q1)
 
     q2 = Question(oneof, "Block 1.1a", [])
-    q2.addOption("c")
-    q2.addOption("d")
+    q2.add_option("c")
+    q2.add_option("d")
 
     #trying different ways to add options
     q3 = Question(oneof, "Block 1.1b", [Option("e"), Option("f")])
 
-    b1_1 = Block([q2,q3])
+    b1_1 = Block([q2, q3])
     b1.addSubblock(b1_1)
 
     q4 = Question(oneof, "Block 1b", [Option("g")])
@@ -45,6 +47,8 @@ def create_survey():
 
     b1_2_1 = Block([q6, q7])
     b1_2_2 = Block([q8, q9])
+
+    b1_2.addQuestion(q10)
 
     b1_2.addSubblock(b1_2_1)
     b1_2.addSubblock(b1_2_2)
@@ -70,16 +74,16 @@ def create_survey():
     b3 = Block([q16])
 
     q17 = Question(oneof, "Block 4a", [])
-    q17.addOption("w")
-    q17.addOption("x")
-    q17.addOption("y")
-    q17.addOption("z")
+    q17.add_option("w")
+    q17.add_option("x")
+    q17.add_option("y")
+    q17.add_option("z")
 
     b4 = Block([q17])
 
-    q18 = Question(oneof, "Block 5.1a", [Option("1"),Option("2"),Option("3")])
+    q18 = Question(oneof, "Block 5.1a", [Option("1"), Option("2"), Option("3")])
 
-    q19 = Question(oneof, "Block 5.1b", [Option("3"),Option("4")])
+    q19 = Question(oneof, "Block 5.1b", [Option("3"), Option("4")])
 
     b5_1 = Block([q18, q19])
 
