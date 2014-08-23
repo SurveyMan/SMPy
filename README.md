@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/SurveyMan/SMPy.svg?branch=master)](https://travis-ci.org/SurveyMan/SMPy.js)
+[![Build Status](https://travis-ci.org/SurveyMan/SMPy.svg?branch=master)](https://travis-ci.org/SurveyMan/SMPy)
 ===========
 SMPy
 ===========
