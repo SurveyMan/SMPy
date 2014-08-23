@@ -3,7 +3,7 @@
 import json
 from survey_exceptions import *
 from abc import ABCMeta
-from tidylib import tidy_fragment
+from pytidylib import tidy_fragment
 
 class IdGenerator:
     """
