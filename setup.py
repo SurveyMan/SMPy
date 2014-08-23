@@ -19,6 +19,7 @@ setup(
     description='Python front-end to the SurveyMan Language and Runtime',
     long_description=open('README.md').read(),
     install_requires=[
-        "jsonschema == 2.3.0"
+        "jsonschema == 2.3.0",
+        "pytidylib ==  0.2.3"
     ],
 )
