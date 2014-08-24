@@ -5,7 +5,6 @@ from __ids__ import *
 from surveyman.survey.questions import *
 
 surveyGen = IdGenerator("s")
-blockGen = IdGenerator("b")
 constraintGen = IdGenerator("c")
 
 
@@ -58,7 +57,7 @@ class Survey:
         #check that all blocks are either branch none, branch one, or branch all
         #change so that it checks subblocks for branching also?
         for b in self.blockList:
-            b.validBranchNumber(); #should throw exception if invalid
+            b.valid_branch_number(); #should throw exception if invalid
         
                 
         #check that all branches branch to top level blocks in the survey
@@ -104,156 +103,6 @@ class Survey:
         output = output.replace("\'", "\"")
         return output
 
-
-
-class Block:
-    """
-    Contains the components of a survey Block.
-    A block can hold both questions and subblocks
-    """
-
-    def subblockIDs(self):
-        """
-        checks if block contains other blocks, give them appropriate labels.
-        Subblocks have ids in the form "parent_id.child_id"
-        fixes block labels of the questions contained in the subblocks
-        """
-        if(len(self.contents) != 0):
-            for c in self.contents:
-                if(isinstance(c,Block)):
-                    c.blockid=self.blockid+(".")+c.blockid
-                    c.labelQuestions()
-                    
-    def labelQuestions(self):
-        """labels questions with the id of the block that contains them"""
-        if(len(self.contents) != 0):
-            for q in self.contents:
-                if(isinstance(q,Question)):
-                    q.block=self.blockid
-        
-    def __init__(self, contents, randomize = False):
-        """
-        creates a Block objects;
-        Blocks are a list of contents which could be either subblocks or questions
-        Blocks may be randomized; by default, they are not
-        """
-        self.contents = contents #could contain blocks or questions
-        self.blockid = blockGen.generateID()
-        self.randomize = randomize
-        self.subblockIDs()
-        self.labelQuestions()
-
-    def addQuestion(self, question):
-        """
-        adds question to the end of the Block's list of contents
-        labels the question with the containing block's id
-        """
-        question.block=self.blockid
-        self.contents.append(question)
-        
-    def addSubblock(self, subblock):
-        """
-        adds a subblock to the end of the Block's list of contents
-        labels the subblock with the containing block's id
-        """
-        subblock.parent=self.blockid
-        subblock.blockid = self.blockid+"."+subblock.blockid
-        self.contents.append(subblock)
-
-    def getSubblocks(self):
-        """returns a list of all the subblocks in the block"""
-        subblocks = []
-        for c in self.contents:
-            if(isinstance(c,Block)):
-                subblocks.append(c)
-        return subblocks
-
-    def getQuestions(self):
-        """returns a list of all the questions in the block"""
-        questions = []
-        for c in self.contents:
-            if(isinstance(c,Question)):
-                questions.append(c)
-        return questions
-
-    #rethinking how this is done, may move check to Survey object instead
-    def validBranchNumber(self):
-        """
-        checks if there are a valid number of branch questions in the block.
-        The three possible policies are branch-one, branch-all, or branch-none
-        """
-        branching = []
-        numQuestions = len(self.getQuestions())
-        for q in self.getQuestions():
-            if q.branching == True:
-                branching.append(q);
-                
-        if len(branching) == 1:
-            #if block contains a branch question, check that none of the subblocks are branch-one
-            for b in self.getSubblocks():
-                if b.validBranchNumber() == "branch-one":
-                    badBranch = InvalidBranchException("Branch-one block cannot contain a branch-one subblock")
-                    raise badBranch()
-            return "branch-one"
-        elif len(branching)==numQuestions and len(branching)!=0:
-            #for branch all: check that all questions branch to the same block(s)
-            if len(branching)!=0 and hasattr(branching[0], "branchMap"):
-                blocksBranchedTo = branching[0].branchMap.getBlocks()
-            for q in branching:
-                if hasattr(q, "branchMap"):
-                    if q.branchMap.getBlocks() != blocksBranchedTo:
-                        badBranch = InvalidBranchException("Block branches to different destinations")
-                        raise badBranch()
-            #check that block does not contain subblocks if branch-all
-            if len(self.getSubblocks()) != 0:
-                badBranch = InvalidBranchException("Branch-all block cannot contain subblocks")
-                raise badBranch()
-            return "branch-all"
-        elif len(branching)!=0: 
-            #throw invalid branch exception
-            badBranch = InvalidBranchException("Block contains too many branch questions")
-            raise badBranch()
-            return "bad-branch"
-        else:
-            subblockTypes = []
-            for b in self.getSubblocks():
-                subblockTypes.append(b.validBranchNumber())
-            #if there is a branch-one subblock, all of its siblings must be either branch-none or branch-all
-            if subblockTypes.count("branch-one")>1:
-                badBranch = InvalidBranchException("Block has too many branch-one subblocks")
-                raise badBranch()
-                return "bad-branch"
-            else:
-                return "branch-none"                                                   
-
-
-    def equals(self, block2):
-        """determines if block object is the same block as another object"""
-        return self.blockid == block2.blockid
-
-    def __str__(self):
-        """returns the string representation of the block"""
-        output = "Block ID: "+self.blockid+"\n"
-        for c in self.contents:
-            output=output+str(c)+"\n"
-        return output
-    
-    def jsonize(self):
-        """returns the JSON representation of the block"""
-        qs=[]
-        bs=[]
-        for q in self.contents:
-            if(isinstance(q, Question)): 
-                qs.append(q.jsonize())
-            else:
-                bs.append(q.jsonize())
-        if self.randomize:
-            r = "true"
-        else:
-            r = "false"
-        output = "{'id' : '%s', 'questions' : [%s], 'randomize' : '%s', 'subblocks' : [%s] }"%(self.blockid, ",".join(qs), r, ",".join(bs))
-        output = output.replace('\'', '\"');
-        return output
 
 class Constraint:
     """

@@ -23,7 +23,7 @@ class BlockTests(unittest.TestCase):
         else:
             sum_subblocks = 0
             for b in block_list:
-                sum_subblocks += self.count_blocks(b.getSubblocks())
+                sum_subblocks += self.count_blocks(b.get_subblocks())
             return sum_subblocks + len(block_list)
 
     #assert that the test surveys contain the desired number of blocks
@@ -36,9 +36,9 @@ class BlockTests(unittest.TestCase):
     def test_add_blocks(self):
         print("Running add block test")
         block1 = Block([])
-        block1.addQuestion(Question("oneof", "this is a question", [Option("pick me")]))
+        block1.add_question(Question("oneof", "this is a question", [Option("pick me")]))
         block2 = Block([])
-        block1.addSubblock(block2)
+        block1.add_subblock(block2)
         self.assertEqual(self.count_blocks([block1]),2)
 
         #print str(block1)

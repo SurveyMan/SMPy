@@ -1,6 +1,7 @@
 #example of invalid branching
 #based on https://github.com/etosch/SurveyMan/blob/master/data/tests/test4_two_branches_one_block.csv
 from surveyman.survey.survey_representation import *
+from surveyman.survey.blocks import *
 
 
 def create_survey():

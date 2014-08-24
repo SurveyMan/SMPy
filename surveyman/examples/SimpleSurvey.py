@@ -1,4 +1,5 @@
 from surveyman.survey.survey_representation import *
+from surveyman.survey.blocks import *
 
 
 def create_survey():

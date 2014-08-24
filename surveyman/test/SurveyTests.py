@@ -2,6 +2,7 @@ __author__ = 'etosch'
 import unittest
 import surveyman.jsonValidator as validator
 from surveyman.survey.questions import *
+from surveyman.survey.blocks import *
 
 
 class SurveyTests(unittest.TestCase):
@@ -13,6 +14,9 @@ class QuestionTests(unittest.TestCase):
     def setUp(self):
         self.q1 = Question("oneof", "", [Option(str(a)) for a in range(4)])
         self.q2 = Instruction("")
+        self.q3 = FreeText("", regex="[0-9]+")
+        self.q4 = FreeText("", regex=re.compile("[0-9]+"))
+        self.q5 = FreeText("", default="")
 
     def test_question_types(self):
         self.assertRaises(NoSuchQuestionTypeException, Question, "rank", "blah")
@@ -33,11 +37,9 @@ class QuestionTests(unittest.TestCase):
         self.assertEqual(self.q1.options.index(opt2), index)
 
     def test_jsonize(self):
-        json1 = json.loads(self.q1.jsonize())
-        validator.validateJSON(json1, schema=validator.question_schema)
-        print self.q2.jsonize()
-        json2 = json.loads(self.q2.jsonize())
-        validator.validateJSON(json2, schema=validator.question_schema)
+        for q in [self.q1, self.q2, self.q3, self.q4, self.q5]:
+            validator.validate_json(json.loads(q.jsonize()), schema=validator.question_schema)
+        self.assertRaises(QuestionTypeException, FreeText, "", regex=".*", default="")
 
 
 class OptionTests(unittest.TestCase):
@@ -56,17 +58,43 @@ class OptionTests(unittest.TestCase):
 
     def test_jsonize(self):
         json1 = json.loads(self.text_opt.jsonize())
-        validator.validateJSON(json1, schema=validator.option_schema)
+        validator.validate_json(json1, schema=validator.option_schema)
         print self.html_opt.jsonize()
         json2 = json.loads(self.html_opt.jsonize())
-        validator.validateJSON(json2, schema=validator.option_schema)
+        validator.validate_json(json2, schema=validator.option_schema)
 
 
 class BlockTests(unittest.TestCase):
-    pass
 
+    def setUp(self):
+        self.basic_block = Block([Question(__likert__, "", [])])
+
+    def test_add_question(self):
+        ct = len(self.basic_block.get_questions())
+        self.assertGreater(ct, 0)
+        self.basic_block.add_question(Question(__checkbox__, "", [Option(str(a)) for a in range(4)]))
+        self.assertEquals(ct+1, len(self.basic_block.get_questions()))
+
+    def test_add_subblock(self):
+        qct = len(self.basic_block.get_questions())
+        bct = len(self.basic_block.get_subblocks())
+        self.basic_block.add_subblock(Block([Question(__instruction__, ""), Block([Question(__freetext__, "")])]))
+        self.assertEqual(qct, len(self.basic_block.get_questions()))
+        self.assertEqual(bct+1, len(self.basic_block.get_subblocks()))
+        self.assertEqual(1, len(self.basic_block.get_subblocks()[0].get_subblocks()))
+
+    def test_branch_validity(self):
+        self.assertEqual(__branch_none__, self.basic_block.valid_branch_number())
+
+    def test_cycles(self):
+        pass
+
+    def test_jsonize(self):
+        validator.validate_json(json.loads(self.basic_block.jsonize()), schema=validator.block_schema)
 
 class ConstraintTests(unittest.TestCase):
-    pass
+
+    def test_branch_validity(self):
+        pass
 
 

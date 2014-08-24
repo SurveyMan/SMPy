@@ -8,6 +8,7 @@ import __ids__
 
 __opGen__ = __ids__.IdGenerator("comp_")
 
+
 class Option:
     """
     Contains the components of an option:
@@ -18,21 +19,21 @@ class Option:
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, opText):
+    def __init__(self, op_text):
         """
         Creates an Option object with a unique id and the specified option text
-        :param opText:  The text to display (may be HTML)
+        :param op_text:  The text to display (may be HTML)
         :return:
         """
         #initialize option text field
-        self.opText = opText
+        self.opText = op_text
         #generate id for option
         self.opId = __opGen__.generateID()
 
     def __eq__(self, other):
         """
         Determines if self is the same option as other
-        :param o2: the Option to compare with
+        :param other: the Option to compare with
         :return:
         """
         return type(other) == Option.__class__ and self.opId == other.opId
@@ -54,13 +55,12 @@ class TextOption(Option):
 
 class HTMLOption(Option):
 
-    def __init__(self, opHTML):
+    def __init__(self, op_html):
 
-        document, errors = tidy_fragment("<!DOCTYPE html><html><head><title></title><body>%s</body></html>" % opHTML)
+        document, errors = tidy_fragment("<!DOCTYPE html><html><head><title></title><body>%s</body></html>" % op_html)
         # python is stupid
         if len(errors) > 1:
             print errors
             raise HTMLValidationException()
         else:
-            Option.__init__(self, opHTML)
-
+            Option.__init__(self, op_html)

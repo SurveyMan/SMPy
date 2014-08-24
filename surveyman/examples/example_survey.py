@@ -3,7 +3,7 @@
 #outputs JSON representation
 
 from surveyman.survey.survey_representation import *
-from surveyman.survey.questions import *
+from surveyman.survey.blocks import *
 
 
 def create_survey():
