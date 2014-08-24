@@ -1,7 +1,8 @@
 #example of invalid branching
 #based on https://github.com/etosch/SurveyMan/blob/master/data/tests/test4_two_branches_one_block.csv
-from surveyman.survey.survey_representation import *
+from surveyman.survey.surveys import *
 from surveyman.survey.blocks import *
+from surveyman.survey.constraints import *
 
 
 def create_survey():
@@ -40,22 +41,22 @@ def create_survey():
     block6 = Block([q12])
 
     branch1 = Constraint(q3)
-    branch1.addBranchByOpText("eggs", block2)
-    branch1.addBranchByOpText("ham", block3)
+    branch1.add_branch_by_op_text("eggs", block2)
+    branch1.add_branch_by_op_text("ham", block3)
     
     branch2 = Constraint(q7)
-    branch2.addBranchByIndex(0, block4)
-    branch2.addBranchByIndex(1, block3)
+    branch2.add_branch_by_index(0, block4)
+    branch2.add_branch_by_index(1, block3)
 
     #improper branch - more than one branch question in Block 3, doesn't satisfy branch-all
     branch3 = Constraint(q8)
-    branch3.addBranchByOpText("lupe", block5)
-    branch3.addBranchByOpText("marky mark", block5)
-    branch3.addBranchByOpText("tony wonder", block6)
+    branch3.add_branch_by_op_text("lupe", block5)
+    branch3.add_branch_by_op_text("marky mark", block5)
+    branch3.add_branch_by_op_text("tony wonder", block6)
 
     branch4 = Constraint(q9)
-    branch4.addBranchByIndex(0, block4)
-    branch4.addBranchByIndex(1, block5)
+    branch4.add_branch_by_index(0, block4)
+    branch4.add_branch_by_index(1, block5)
 
     block_list = [block1, block2, block3, block4, block5, block6]
     branch_list = [branch1, branch2, branch3, branch4]

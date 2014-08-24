@@ -1,5 +1,6 @@
-from surveyman.survey.survey_representation import *
+from surveyman.survey.surveys import *
 from surveyman.survey.blocks import *
+from surveyman.survey.constraints import *
 
 
 def create_survey():
@@ -17,7 +18,7 @@ def create_survey():
     b3 = Block([b1, b2])
 
     branch = Constraint(q3)
-    branch.addBranchByIndex(0, b4)
+    branch.add_branch_by_index(0, b4)
 
     survey = Survey([b3, b4], [branch])
     return survey

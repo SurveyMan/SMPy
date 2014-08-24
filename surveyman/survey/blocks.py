@@ -118,10 +118,10 @@ class Block:
         elif len(branching) is num_questions and len(branching) is not 0:
             #for branch all: check that all questions branch to the same block(s)
             if len(branching) is not 0 and branching[0].branch_map is not None:
-                blocks_branched_to = branching[0].branch_map.getBlocks()
+                blocks_branched_to = branching[0].branch_map.get_blocks()
             for q in branching:
                 if q.branch_map is not None:
-                    if q.branch_map.getBlocks() != blocks_branched_to:
+                    if q.branch_map.get_blocks() != blocks_branched_to:
                         raise InvalidBranchException("Block branches to different destinations")
             #check that block does not contain subblocks if branch-all
             if len(self.get_subblocks()) is not 0:

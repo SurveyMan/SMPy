@@ -2,8 +2,10 @@
 #example survey based on https://github.com/etosch/SurveyMan/blob/master/data/Ipierotis.csv
 #outputs JSON representation
 
-from surveyman.survey.survey_representation import *
+from surveyman.survey.surveys import *
 from surveyman.survey.blocks import *
+from surveyman.survey.constraints import *
+
 
 
 def create_survey():
@@ -150,9 +152,9 @@ def create_survey():
     block3 = Block([q10, q11, q12, q13, q14, q15, q16])
 
     branch1 = Constraint(q8)
-    branch1.addBranchByIndex(0, block2)
-    branch1.addBranchByIndex(1, block3)
-    branch1.addBranchByIndex(2, block3)
+    branch1.add_branch_by_index(0, block2)
+    branch1.add_branch_by_index(1, block3)
+    branch1.add_branch_by_index(2, block3)
     #print str(branch1)
     
     survey = Survey([block1, block2, block3], [branch1])

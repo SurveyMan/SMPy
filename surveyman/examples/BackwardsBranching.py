@@ -1,7 +1,8 @@
 #example of invalid branching
 #based on https://github.com/etosch/SurveyMan/blob/master/data/tests/test4_two_branches_one_block.csv
-from surveyman.survey.survey_representation import *
+from surveyman.survey.surveys import *
 from surveyman.survey.blocks import *
+from surveyman.survey.constraints import *
 
 
 def create_survey():
@@ -40,13 +41,13 @@ def create_survey():
     block6 = Block([q12])
 
     branch1 = Constraint(q3)
-    branch1.addBranchByOpText("eggs", block2)
-    branch1.addBranchByOpText("ham", block3)
+    branch1.add_branch_by_op_text("eggs", block2)
+    branch1.add_branch_by_op_text("ham", block3)
 
     #branch backwards
     branch2 = Constraint(q7)
-    branch2.addBranchByIndex(0, block1)
-    branch2.addBranchByIndex(1, block1)
+    branch2.add_branch_by_index(0, block1)
+    branch2.add_branch_by_index(1, block1)
 
 
     block_list = [block1, block2, block3, block4, block5, block6]

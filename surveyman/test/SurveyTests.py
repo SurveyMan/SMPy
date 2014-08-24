@@ -6,7 +6,15 @@ from surveyman.survey.blocks import *
 
 
 class SurveyTests(unittest.TestCase):
-    pass
+
+    def test_add_block(self):
+        pass
+
+    def test_add_block_by_index(self):
+        pass
+
+    def test_validate(self):
+        pass
 
 
 class QuestionTests(unittest.TestCase):
@@ -92,9 +100,30 @@ class BlockTests(unittest.TestCase):
     def test_jsonize(self):
         validator.validate_json(json.loads(self.basic_block.jsonize()), schema=validator.block_schema)
 
+
 class ConstraintTests(unittest.TestCase):
 
     def test_branch_validity(self):
         pass
 
+    def test_add_branch_by_index(self):
+        # add a branch option I know works
+        # add a branch option I know will raise an exception
+        pass
 
+    def test_add_branch(self):
+        # add a branch option I know works
+        # add a branch option I know will raise an exception
+        pass
+
+    def test_add_branch_by_op_text(self):
+        # add a branch option I know works
+        # add a branch option I know will raise an exception
+        pass
+
+    def test_get_blocks(self):
+        # add a bunch of constraints and see if we get the right stuff back
+        pass
+
+    def test_jsonize(self):
+        pass

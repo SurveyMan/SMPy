@@ -1,5 +1,5 @@
 import unittest
-from surveyman.survey.survey_representation import *
+from surveyman.survey.blocks import *
 import surveyman.examples.subblock_example as sbEx
 import surveyman.examples.example_survey as ex
 import surveyman.examples.SimpleSurvey as simpEx
@@ -42,9 +42,9 @@ class BlockTests(unittest.TestCase):
         self.assertEqual(self.count_blocks([block1]),2)
 
         #print str(block1)
-        self.ipierotisSurvey.addBlock(block1)
-        self.blockSurvey.addBlock(block1)
-        self.simpleSurvey.addBlock(block1)
+        self.ipierotisSurvey.add_block(block1)
+        self.blockSurvey.add_block(block1)
+        self.simpleSurvey.add_block(block1)
         
         self.assertEqual(self.count_blocks(self.ipierotisSurvey.blockList),5)
         self.assertEqual(self.count_blocks(self.blockSurvey.blockList),11)

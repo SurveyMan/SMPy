@@ -1,7 +1,8 @@
 #example survey based on https://github.com/etosch/SurveyMan/blob/master/data/samples/sample3.csv
 #outputs JSON representation
 
-from surveyman.survey.survey_representation import *
+from surveyman.survey.surveys import *
+from surveyman.survey.constraints import *
 from surveyman.survey.blocks import *
 
 
