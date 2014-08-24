@@ -1,5 +1,6 @@
 __author__ = "mmcmahon13"
 
+import json
 from surveyman.survey.constraints import __NEXT__
 from __ids__ import *
 from survey_exceptions import *
@@ -23,7 +24,7 @@ class Survey:
         :param constraints: The associated constraints
         :param breakoff: Boolean value indicating the ability to submit results early
         """
-        #generate ID
+        # generate ID
         self.surveyID = __surveyGen__.generateID()
         #survey is a list of blocks, which hold questions and subblocks
         #at least one block with all the questions in it
@@ -31,7 +32,7 @@ class Survey:
         #list of branching constraints
         self.constraints = constraints
         self.hasBreakoff = breakoff
-        
+
     def add_block(self, block):
         """
         Adds a top level block to the end of the survey's block list (assumed to be a top level block)
@@ -39,7 +40,7 @@ class Survey:
         :return:
         """
         self.blockList.append(block)
-        
+
     def add_block_by_index(self, block, index):
         """
         Adds a top level block to the desired index in the survey's block list
@@ -49,7 +50,7 @@ class Survey:
         :param index: The index at which the block should be added
         :return:
         """
-        #add block at certain index
+        # add block at certain index
         #throws index out of bounds exception (?)
         self.blockList.insert(index, block)
 
@@ -62,7 +63,7 @@ class Survey:
             -all branches branch forward
         An exception is thrown if any of these conditions are violated
         """
-        #check that all blocks are either branch none, branch one, or branch all
+        # check that all blocks are either branch none, branch one, or branch all
         #change so that it checks subblocks for branching also?
         for b in self.blockList:
             b.valid_branch_number()
@@ -77,7 +78,8 @@ class Survey:
                         survey_has_block = True
                         break
                 if not survey_has_block:
-                    raise InvalidBranchException("Question "+c.question.qText+" does not branch to a block in survey")
+                    raise InvalidBranchException(
+                        "Question " + c.question.qText + " does not branch to a block in survey")
 
         #check that all branches branch forward 
         for c in self.constraints:
@@ -87,25 +89,26 @@ class Survey:
             survey_block_ids = [b.blockId for b in self.blockList]
             for bid in c.get_blocks():
                 if bid is not __NEXT__ and survey_block_ids.index(block_id) >= survey_block_ids.index(bid):
-                    raise InvalidBranchException("Question "+branch_question.qText+" does not branch forward")
+                    raise InvalidBranchException("Question " + branch_question.qText + " does not branch forward")
 
     def __str__(self):
-        #include some visualization of current branch/block structure?
-        output = "Survey ID: "+self.surveyID+"\n"
+        # include some visualization of current branch/block structure?
+        output = "Survey ID: " + self.surveyID + "\n"
         for b in self.blockList:
-            output = output+str(b)+"\n"
+            output = output + str(b) + "\n"
         return output
-        
+
     def jsonize(self):
         """
-        Returns the JSON representation of the survey
+        Returns the JSON representation of the survey. This is validated against
+        `http://surveyman.github.io/Schemata/survey_input.json
         :return: JSON
         """
         self.validate()
-        if self.hasBreakoff:
-            breakoff = "true"
-        else:
-            breakoff = "false"
-        output = "{'breakoff' : '%s', 'survey' : [%s] }" %(breakoff, ",".join([b.jsonize() for b in self.blockList]))
-        output = output.replace("\'", "\"")
-        return output
+        __survey__ = "survey"
+        __breakoff__ = "breakoff"
+        __correlation__ = "correlation"
+        __otherValues__ = "otherValues"
+        output = {__survey__: [json.loads(b.jsonize()) for b in self.blockList], __breakoff__: self.hasBreakoff,
+                  __correlation__: {}, __otherValues__: {}}
+        return json.dumps(output)

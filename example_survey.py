@@ -30,7 +30,7 @@ survey = Survey([q1, q2, q3, q4])
 filename = 'jsonized_survey.txt'
 
 f = open(filename, 'w')
-f.write(json.dumps(survey.jsonize(), sort_keys = True, indent = 4))
+f.write(json.dumps(survey.jsonize, sort_keys = True, indent = 4))
 f.close()
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 __author__ = 'mmcmahon13'
 
+import json
 from __ids__ import *
 from survey_exceptions import *
 
@@ -84,19 +85,8 @@ class Constraint:
         return output
 
     def jsonize(self):
-        """returns the JSON representation of the Constraint"""
-        temp = ""
-        cmap = []
-        for tup in self.constraintMap:
-            temp+="'"+tup[0]+"' : "
-            if tup[1] == "null":
-                temp+="null"
-            else:
-                temp+="'"+tup[1]+"'"
-            cmap.append(temp)
-            temp = ""
-        output = "[%s]"%(",".join(cmap))
-        output = output.replace('\'', '\"')
-        output = output.replace('[','{')
-        output = output.replace(']','}')
-        return output
+        """
+        Returns the JSON representation of the Constraint
+        :return: JSON representation according to schema at `http://surveyman.github.io/Schemata/survey_branchMap.json`
+        """
+        return json.dumps({opid : blockid for (opid, blockid) in self.constraintMap})

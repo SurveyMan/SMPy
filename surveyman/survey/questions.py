@@ -57,7 +57,7 @@ class Question:
         self.breakoff = breakoff
         self.freetext = freetext
         self.options = options
-        assert (freetext is not True or len(self.options) is 0)
+        assert (freetext is not True or len(self.options) == 0)
 
     def add_option(self, o):
         """
@@ -116,7 +116,8 @@ class Question:
     def jsonize(self):
         """
         Returns JSON representation of the question
-        :return: JSON representation of self
+        :return: JSON representation of self according to the schema at
+        `http://surveyman.github.io/Schemata/survey_question.json`
         """
 
         output = {"id": self.qId, "qtext": self.qText, "breakoff": self.breakoff}

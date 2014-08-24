@@ -2,10 +2,35 @@ __author__ = 'mmcmahon13'
 from __ids__ import *
 from surveyman.survey.questions import *
 
-__blockGen__ = IdGenerator("b")
+__blockGen__ = IdGenerator("b_")
 __branch_one__ = "branch-one"
 __branch_all__ = "branch-all"
 __branch_none__ = "branch-none"
+
+
+def get_farthest_ancestor(block):
+    assert(isinstance(block, Block))
+    if block.parent is None:
+        return block
+    else:
+        return get_farthest_ancestor(block.parent)
+
+
+def get_all_blocks(block):
+
+    assert(isinstance(block, Block))
+    subblocks = [b for b in block.contents if isinstance(b, Block)]
+    retval = []
+
+    if len(subblocks) == 0:
+        retval.append(block)
+    else:
+        blocks = [block]
+        for sb in subblocks:
+            blocks.extend(get_all_blocks(sb))
+        retval.extend(blocks)
+
+    return retval
 
 
 class Block:
@@ -29,6 +54,7 @@ class Block:
         self.randomize = randomize
         self.__subblock_ids()
         self.__label_questions()
+        self.parent = None
 
     def __subblock_ids(self):
         """
@@ -39,9 +65,11 @@ class Block:
         """
         if len(self.contents) != 0:
             for c in self.contents:
-                if isinstance(c,Block):
-                    c.blockId=self.blockId+(".")+c.blockId
-                    c.__label_questions()
+                if isinstance(c, Block):
+                    # update blockId
+                    c.blockId = self.blockId + "." + c.blockId
+                    # set parent pointer
+                    c.parent = self
 
     def __label_questions(self):
         """
@@ -52,6 +80,12 @@ class Block:
             for q in self.contents:
                 if isinstance(q, Question):
                     q.block = self.blockId
+
+    def __ensure_no_cycles(self, block):
+        farthest_ancestor = get_farthest_ancestor(self)
+        all_blocks = get_all_blocks(farthest_ancestor)
+        if len(all_blocks) != len(set(all_blocks)):
+            raise CycleException("Block %s contains a cycle" % farthest_ancestor)
 
     def add_question(self, question):
         """
@@ -70,8 +104,9 @@ class Block:
         :param subblock:  The subblock to add.
         :return:
         """
-        subblock.parent = self.blockId
-        subblock.blockId = self.blockId+"."+subblock.blockId
+        self.__ensure_no_cycles(subblock)
+        subblock.parent = self
+        subblock.blockId = self.blockId + "." + subblock.blockId
         self.contents.append(subblock)
 
     def get_subblocks(self):
@@ -101,10 +136,13 @@ class Block:
         """
         Checks if there are a valid number of branch questions in the block.
         The three possible policies are branch-one, branch-all, or branch-none.
+
         :return: a branch policy
         """
+
         branching = []
         num_questions = len(self.get_questions())
+
         for q in self.get_questions():
             if q.branching:
                 branching.append(q)
@@ -117,6 +155,7 @@ class Block:
             return __branch_one__
         elif len(branching) is num_questions and len(branching) is not 0:
             #for branch all: check that all questions branch to the same block(s)
+            blocks_branched_to = None
             if len(branching) is not 0 and branching[0].branch_map is not None:
                 blocks_branched_to = branching[0].branch_map.get_blocks()
             for q in branching:
@@ -146,7 +185,7 @@ class Block:
         :param other: another Block
         :return: Boolean
         """
-        return type(other) == Block.__class__ and self.blockId == other.blockid
+        return isinstance(other, Block) and self.blockId == other.blockId
 
     def __str__(self):
         output = "Block ID: "+self.blockId+"\n"
@@ -154,22 +193,25 @@ class Block:
             output = output+str(c)+"\n"
         return output
 
+    def __hash__(self):
+        return self.blockId.__hash__()
+
     def jsonize(self):
         """
         Returns the JSON representation of the block
-        :return:
+        :return: JSON block object `http://surveyman.github.io/Schemata/survey_block.json
         """
-        qs = []
-        bs = []
-        for q in self.contents:
-            if isinstance(q, Question):
-                qs.append(q.jsonize())
+        __id__ = "id"
+        __questions__ = "questions"
+        __randomize__ = "randomize"
+        __subblocks__ = "subblocks"
+        output = {__id__: self.blockId, __questions__: [], __randomize__: self.randomize, __subblocks__: []}
+        for thing in self.contents:
+            if isinstance(thing, Question):
+                output[__questions__].append(json.loads(thing.jsonize()))
+            elif isinstance(thing, Block):
+                output[__subblocks__].append(json.loads(thing.jsonize()))
             else:
-                bs.append(q.jsonize())
-        if self.randomize:
-            r = "true"
-        else:
-            r = "false"
-        output = "{'id' : '%s', 'questions' : [%s], 'randomize' : '%s', 'subblocks' : [%s] }"%(self.blockId, ",".join(qs), r, ",".join(bs))
-        output = output.replace('\'', '\"')
-        return output
+                raise UnknownContentsException("Block %s has contents %s. Only %s and %s are permitted." %
+                                               (self.blockId, type(thing), Question.__class__, Block.__class__))
+        return json.dumps(output)

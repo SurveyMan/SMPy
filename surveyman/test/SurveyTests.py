@@ -1,11 +1,21 @@
 __author__ = 'etosch'
+
 import unittest
 import surveyman.jsonValidator as validator
-from surveyman.survey.questions import *
+import surveyman.examples.SimpleSurvey as simple
+import surveyman.examples.example_survey as example
+import surveyman.examples.subblock_example as sub
 from surveyman.survey.blocks import *
+from surveyman.survey.questions import __likert__, __instruction__, __checkbox__, __freetext__
+from surveyman.survey.blocks import __branch_none__
 
 
 class SurveyTests(unittest.TestCase):
+
+    def setUp(self):
+        self.ex1 = simple.create_survey()
+        self.ex2 = example.create_survey()
+        self.ex3 = sub.create_survey()
 
     def test_add_block(self):
         pass
@@ -15,6 +25,11 @@ class SurveyTests(unittest.TestCase):
 
     def test_validate(self):
         pass
+
+    def test_jsonize(self):
+        for ex in [self.ex1, self.ex2, self.ex3]:
+            print ex.jsonize(), "\n"
+            validator.validate_json(json.loads(ex.jsonize()))
 
 
 class QuestionTests(unittest.TestCase):
@@ -94,8 +109,32 @@ class BlockTests(unittest.TestCase):
     def test_branch_validity(self):
         self.assertEqual(__branch_none__, self.basic_block.valid_branch_number())
 
+    def test_farthest_ancestor(self):
+        sb1 = Block([FreeText("")])
+        sb2 = Block([sb1])
+        sb3 = Block([sb2])
+        self.assertEqual(get_farthest_ancestor(sb1), sb3)
+
+    def test_get_all_blocks(self):
+        sb1 = Block([FreeText("")])
+        self.assertEqual(len(sb1.contents), 1)
+        self.assertIsInstance(sb1.contents[0], Question)
+        self.assertItemsEqual(get_all_blocks(sb1), [sb1])
+        sb4 = Block([Instruction("")])
+        sb2 = Block([sb1, sb4])
+        self.assertEqual(len(sb2.contents), 2)
+        self.assertIsInstance(sb2.contents[0], Block)
+        self.assertIsInstance(sb2.contents[1], Block)
+        self.assertItemsEqual(get_all_blocks(sb2), [sb1, sb2, sb4])
+        sb3 = Block([sb2])
+        self.assertEqual(len(sb3.contents), 1)
+        self.assertIsInstance(sb3.contents[0], Block)
+        self.assertItemsEqual(get_all_blocks(sb3), [sb1, sb2, sb3, sb4])
+
     def test_cycles(self):
-        pass
+        subblock = Block([])
+        self.basic_block.add_subblock(subblock)
+        subblock.add_subblock(self.basic_block)
 
     def test_jsonize(self):
         validator.validate_json(json.loads(self.basic_block.jsonize()), schema=validator.block_schema)

@@ -60,7 +60,7 @@ class SurveyResponse:
         return len(self.response)
         
     def jsonize(self):
-        return [{ "question" : question.jsonize(), "option_list" : [opt.jsonize() for opt in option_list] } \
+        return [{ "question" : question.jsonize, "option_list" : [opt.jsonize for opt in option_list] } \
                 for (question, option_list) in self.response]
 
     def sorted(self):
@@ -96,7 +96,7 @@ class Survey :
         raise ValueError(str('No question with id', quid))
 
     def jsonize(self):
-        return [q.jsonize() for q in self.questions]
+        return [q.jsonize for q in self.questions]
         
     def shuffle(self):
         random.shuffle(self.questions)
@@ -165,7 +165,7 @@ class Question :
                 , "qtext" : self.qtext
                 , "ok2shuffle" : self.ok2shuffle
                 , "qtype" : self.qtype
-                , "options" : [o.jsonize() for o in sorted(self.options, key = lambda opt : opt.oindex)]}
+                , "options" : [o.jsonize for o in sorted(self.options, key = lambda opt : opt.oindex)]}
 
     def reset_oindices(self):
         for (oindex, option) in enumerate(self.options):

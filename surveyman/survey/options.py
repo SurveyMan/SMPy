@@ -41,7 +41,8 @@ class Option:
     def jsonize(self):
         """
         Returns the JSON representation of the option
-        :return:
+        :return: A JSON object according to the schema at
+        `http://surveyman.github.io/Schemata/survey_option.json`
         """
         return json.dumps({"id" : self.opId, "otext" : self.opText})
 

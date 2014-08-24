@@ -42,3 +42,9 @@ class NoSuchQuestionTypeException(ExceptionTemplate):
 
 class QuestionTypeException(ExceptionTemplate):
     pass
+
+class UnknownContentsException(ExceptionTemplate):
+    pass
+
+class CycleException(ExceptionTemplate):
+    pass
