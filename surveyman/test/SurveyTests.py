@@ -134,7 +134,7 @@ class BlockTests(unittest.TestCase):
     def test_cycles(self):
         subblock = Block([])
         self.basic_block.add_subblock(subblock)
-        subblock.add_subblock(self.basic_block)
+        self.assertRaises(CycleException, subblock.add_subblock, self.basic_block)
 
     def test_jsonize(self):
         validator.validate_json(json.loads(self.basic_block.jsonize()), schema=validator.block_schema)
