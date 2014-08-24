@@ -132,9 +132,11 @@ class BlockTests(unittest.TestCase):
         self.assertItemsEqual(get_all_blocks(sb3), [sb1, sb2, sb3, sb4])
 
     def test_cycles(self):
-        subblock = Block([])
-        self.basic_block.add_subblock(subblock)
-        self.assertRaises(CycleException, subblock.add_subblock, self.basic_block)
+        sb1 = Block([])
+        sb2 = Block([sb1])
+        self.assertRaises(CycleException, sb1.add_subblock, sb2)
+        self.basic_block.add_subblock(sb2)
+        self.assertRaises(CycleException, sb1.add_subblock, self.basic_block)
 
     def test_jsonize(self):
         validator.validate_json(json.loads(self.basic_block.jsonize()), schema=validator.block_schema)

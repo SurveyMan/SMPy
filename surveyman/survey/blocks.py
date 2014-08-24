@@ -84,7 +84,7 @@ class Block:
     def __ensure_no_cycles(self, block):
         farthest_ancestor = get_farthest_ancestor(self)
         all_blocks = get_all_blocks(farthest_ancestor)
-        if len(all_blocks) != len(set(all_blocks)):
+        if block in all_blocks:
             raise CycleException("Block %s contains a cycle" % farthest_ancestor)
 
     def add_question(self, question):
