@@ -9,29 +9,34 @@ __checkbox__ = "checkbox"
 __oneof__ = "oneof"
 __instruction__ = "instruction"
 __freetext__ = "freetext"
-__qTypes__ = {
+
+qTypes = {
     "likert": __likert__,
     "checkbox": __checkbox__,
     "oneof": __oneof__,
     "instruction": __instruction__,
     "freetext": __freetext__
 }
-
+"""
+ Question types include:
+ - likert : Questions are presented on a scale. These questions typically have 4-7 options available. Their relative order must be maintained. They are presented to the user with teh HTML `radio` input.
+ - checkbox : The options for checkbox questions may be presented in any order. They are presented to the user with the HTML `check` input.
+ - oneof : These questions have unordered, exclusive options. They are presented to the user with the HTML `radio` input.
+ - freetext : These question have no options associated with them. Instead, they are presented as an HTML `textarea`. Freetext questions may contain a default value, to be displayed in the text box, or they may require validation against a regular expression.
+ - instruction : These questions have no options associated with them. They are purely instructional. They do not return any data.
+"""
 
 class Question:
     """
-    Contains the components of a survey question:
-    Question type is either "radio", "dropdown", "check", or "freetext"
-    Question contains text and options, and can be shuffled in a block or fixed
-    A question may contain a branchmap
+    Contains the components of a survey question. SurveyMan presents questions one at a time.
     """
 
     def __init__(self, qType, qText, options=[], shuffle=True, freetext=None, breakoff=True):
         """
-        Creates a Question object with a unique id
+        Creates a Question object with a unique id.
         Question type, text, and a list of options must be specified
-            (option list may be empty)
-        Shuffling is allowed by default; user must specify otherwise
+            (option list may be empty).
+        Shuffling is allowed by default; user must specify otherwise.
 
         :param qType: One of "likert", "checkbox", "oneof", "freetext", or "instructional"
         :param qText: The text to display
