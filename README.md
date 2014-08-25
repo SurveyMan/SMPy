@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/SurveyMan/SMPy.svg?branch=master)](https://travis-ci.org/SurveyMan/SMPy)
+[![Documentation Status](https://readthedocs.org/projects/smpy/badge/?version=latest)](https://readthedocs.org/projects/smpy/?badge=latest)
+ 
 ===========
 SMPy
 ===========
