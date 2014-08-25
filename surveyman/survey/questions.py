@@ -10,21 +10,21 @@ __oneof__ = "oneof"
 __instruction__ = "instruction"
 __freetext__ = "freetext"
 
-qTypes = {
-    "likert": __likert__,
-    "checkbox": __checkbox__,
-    "oneof": __oneof__,
-    "instruction": __instruction__,
-    "freetext": __freetext__
-}
+qTypes = [__likert__, __checkbox__, __oneof__, __instruction__, __freetext__]
 """
  Question types include:
+
  - likert : Questions are presented on a scale. These questions typically have 4-7 options available. Their relative order must be maintained. They are presented to the user with teh HTML `radio` input.
+
  - checkbox : The options for checkbox questions may be presented in any order. They are presented to the user with the HTML `check` input.
+
  - oneof : These questions have unordered, exclusive options. They are presented to the user with the HTML `radio` input.
+
  - freetext : These question have no options associated with them. Instead, they are presented as an HTML `textarea`. Freetext questions may contain a default value, to be displayed in the text box, or they may require validation against a regular expression.
+
  - instruction : These questions have no options associated with them. They are purely instructional. They do not return any data.
 """
+
 
 class Question:
     """
@@ -50,10 +50,10 @@ class Question:
         # if you don't want to add options immediately, add empty list as argument
         #call generateID
         self.qId = __qGen__.generateID()
-        if qType not in __qTypes__:
-            raise NoSuchQuestionTypeException("%s not in {%s}" % (qType, ",".join(__qTypes__.keys())))
+        if qType not in qTypes:
+            raise NoSuchQuestionTypeException("%s not in {%s}" % (qType, ",".join(qTypes)))
         else:
-            self.qType = __qTypes__[qType]
+            self.qType = qType
         self.qText = qText
         self.shuffle = shuffle
         self.branching = False
@@ -68,8 +68,8 @@ class Question:
         """
         Adds o to the end of the question's option list. If type(o) is 'str', then this function creates an Option with
         this text before adding it.
+
         :param o: Option to add to this questions' option list.
-        :return:
         """
         if self.qType in [__instruction__, __freetext__]:
             raise QuestionTypeException("Questions of type %s cannot have options." % self.qType)
@@ -86,9 +86,9 @@ class Question:
         Adds o at the desired index in the question's option list. If type(o) is 'str', then this function creates an
         Option with this text before adding it. This method will pad with empty options if an option is added beyond the
         current list.
+
         :param index: The target index for where o should be inserted.
         :param o: Either the text or html of a survey object, or an option object.
-        :return:
         """
         if self.qType in [__instruction__, __freetext__]:
             raise QuestionTypeException("Questions of type %s cannot have options." % self.qType)
@@ -106,8 +106,8 @@ class Question:
     def __eq__(self, other):
         """
         Returns true if self and q2 have the same id.
+
         :param other: Question to compare self to.
-        :return:
         """
         return type(other) == Question.__class__ and self.qId == other.qid
 
@@ -121,8 +121,8 @@ class Question:
     def jsonize(self):
         """
         Returns JSON representation of the question
-        :return: JSON representation of self according to the schema at
-        `http://surveyman.github.io/Schemata/survey_question.json`
+
+        :return: A JSON object according to the `Question Schema <http://surveyman.github.io/Schemata/survey_question.json>`_.
         """
 
         output = {"id": self.qId, "qtext": self.qText, "breakoff": self.breakoff}
@@ -166,10 +166,10 @@ class FreeText(Question):
         """
         Convenient initialization of a Freetext question. Freetext questions cannot have both regular expressions and
         default values associated with them.
+
         :param qText: Question text
         :param regex: String or Pattern object for freetext contents to validate against
         :param default: Default text appearing in a freetext box.
-        :return:
         """
         if regex is not None and default is not None:
             raise QuestionTypeException("Freetext questions cannot have both a regex and a default value.")

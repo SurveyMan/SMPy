@@ -5,8 +5,12 @@ from __ids__ import *
 from survey_exceptions import *
 
 __constraintGen__ = IdGenerator("c")
-__NEXT__ = "NEXT"
 
+NEXT = "NEXT"
+"""
+The `Javascript SurveyMan Interpreter <http://surveyman.github.io/surveyman.js>`_ uses the NEXT pointer to defer the
+choice of branch target to runtime.
+"""
 
 class Constraint:
     """
@@ -20,6 +24,7 @@ class Constraint:
         Constructs a Constraint object with a unique id.
         The constraint is associated with the given question, which is labeled as a branch question.
         By default, the options branch to "null" blocks
+
         :param question: The question associated with this constraint
         """
         self.cid = __constraintGen__.generateID()
@@ -30,12 +35,13 @@ class Constraint:
         #holds list of tuples (opid, blockid)
         self.constraintMap = []
         for o in self.question.options:
-            self.constraintMap.append((o.opId, __NEXT__))
+            self.constraintMap.append((o.opId, NEXT))
 
     def add_branch_by_index(self, opIndex, block):
         """
         Adds a branch from the option at the desired index in the question's option list to the desired block.
         Throws an exception if the index is out of the option list's range.
+
         :param opIndex: The option index associated with this Constraint
         :param block: The target destination for branching
         """
@@ -46,6 +52,7 @@ class Constraint:
         """
         Adds a branch from a specific option object in the question's option list to the desired block.
         Throws an exception if the the question does not have the option.
+
         :param op: The Option object associated with this Constraint
         :param block: The target destination for branching
         """
@@ -59,6 +66,7 @@ class Constraint:
         """
         Adds a branch from the option with the desired text in the question's option list to the desired block.
         Throws an exception if the the question does not have the option.
+
         :param opText: The text of the option to match against
         :param block: The target destination for branching
         """
@@ -71,6 +79,7 @@ class Constraint:
     def get_blocks(self):
         """
         Returns a list of the blocks branched to by the Constraint
+
         :return: A list of Blocks
         """
         output = []
@@ -87,6 +96,7 @@ class Constraint:
     def jsonize(self):
         """
         Returns the JSON representation of the Constraint
-        :return: JSON representation according to schema at `http://surveyman.github.io/Schemata/survey_branchMap.json`
+
+        :return: JSON representation according to the `Constraint Schema <http://surveyman.github.io/Schemata/survey_branchMap.json>`_.
         """
         return json.dumps({opid : blockid for (opid, blockid) in self.constraintMap})

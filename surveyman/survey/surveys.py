@@ -1,7 +1,7 @@
 __author__ = "mmcmahon13"
 
 import json
-from surveyman.survey.constraints import __NEXT__
+from surveyman.survey.constraints import NEXT
 from __ids__ import *
 from survey_exceptions import *
 
@@ -20,6 +20,7 @@ class Survey:
         Creates a Survey object with a unique id.
         The block list and branch lists are required arguments
         The default value of "breakoff" is true
+
         :param blocklist: The top level list of blocks
         :param constraints: The associated constraints
         :param breakoff: Boolean value indicating the ability to submit results early
@@ -36,8 +37,8 @@ class Survey:
     def add_block(self, block):
         """
         Adds a top level block to the end of the survey's block list (assumed to be a top level block)
+
         :param block: The block to add
-        :return:
         """
         self.blockList.append(block)
 
@@ -48,7 +49,6 @@ class Survey:
 
         :param block: The block to add to the top level of the survey
         :param index: The index at which the block should be added
-        :return:
         """
         # add block at certain index
         #throws index out of bounds exception (?)
@@ -74,7 +74,7 @@ class Survey:
                 survey_has_block = False
                 for b in self.blockList:
                     #print("survey block: "+b.blockid + " " +"block branched to: "+bid)
-                    if b.blockId == bid or bid is __NEXT__:
+                    if b.blockId == bid or bid is NEXT:
                         survey_has_block = True
                         break
                 if not survey_has_block:
@@ -88,7 +88,7 @@ class Survey:
             block_id = branch_question.block.split(".")[0]
             survey_block_ids = [b.blockId for b in self.blockList]
             for bid in c.get_blocks():
-                if bid is not __NEXT__ and survey_block_ids.index(block_id) >= survey_block_ids.index(bid):
+                if bid is not NEXT and survey_block_ids.index(block_id) >= survey_block_ids.index(bid):
                     raise InvalidBranchException("Question " + branch_question.qText + " does not branch forward")
 
     def __str__(self):
@@ -102,7 +102,7 @@ class Survey:
         """
         Returns the JSON representation of the survey. This is validated against
 
-        :return: `JSON Survey <http://surveyman.github.io/Schemata/survey_input.json>`_
+        :return: JSON object according to the `Survey Schema <http://surveyman.github.io/Schemata/survey_input.json>`_
         """
         self.validate()
         __survey__ = "survey"

@@ -7,18 +7,48 @@ __branch_one__ = "branch-one"
 __branch_all__ = "branch-all"
 __branch_none__ = "branch-none"
 
+branch_types = [__branch_all__, __branch_none__, __branch_one__]
+"""
+The complex interactions between branching and blocking are what gives SurveyMan its sophisticated control flow.
+SurveyMan supports the following branching policies:
+
+- branch-one: Either this block directly contains a branch question, or one of its sub-blocks is a branch-one.
+
+- branch-none: This block contains no branching questions. None of its sub-blocks are branch-one. Its sub-blocks may be
+a mix of branch-none or branch-all with the NEXT pointer.
+
+- branch-all: Every question in a block has branching logic associated with it. All questions must have equivalent
+branch maps. This block cannot contain any sub-blocks.
+
+"""
+
 
 def get_farthest_ancestor(block):
+    """
+    Returns the topmost block for the input.
+
+    :param block: A block, which may be the sub-block of some other block.
+    :return: A Block
+    """
+
     assert(isinstance(block, Block))
+
     if block.parent is None:
         return block
     else:
         return get_farthest_ancestor(block.parent)
 
 
-def get_all_blocks(block):
+def get_all_subblocks(block):
+    """
+    Traverses all sub-blocks and returns all descendants of the input block.
+
+    :param block: The block whose descendants we want
+    :return: A list of all sub-blocks.
+    """
 
     assert(isinstance(block, Block))
+
     subblocks = [b for b in block.contents if isinstance(b, Block)]
     retval = []
 
@@ -27,7 +57,7 @@ def get_all_blocks(block):
     else:
         blocks = [block]
         for sb in subblocks:
-            blocks.extend(get_all_blocks(sb))
+            blocks.extend(get_all_subblocks(sb))
         retval.extend(blocks)
 
     return retval
@@ -35,8 +65,7 @@ def get_all_blocks(block):
 
 class Block:
     """
-    Contains the components of a survey Block.
-    A block can hold both questions and subblocks
+    Contains the components of a survey Block. A block can hold both questions and sub-blocks.
     """
 
     def __init__(self, contents, randomize=False):
@@ -59,9 +88,8 @@ class Block:
     def __subblock_ids(self):
         """
         Checks if block contains other blocks, giving them appropriate labels.
-        Subblocks have ids in the form "parent_id.child_id."
-        Fixes block labels of the questions contained in the subblocks.
-        :return:
+        Sub-blocks have ids in the form "parent_id.child_id."
+        Fixes block labels of the questions contained in the sub-blocks.
         """
         if len(self.contents) != 0:
             for c in self.contents:
@@ -74,6 +102,7 @@ class Block:
     def __label_questions(self):
         """
         Labels questions with the id of the block that contains them
+
         :return:
         """
         if len(self.contents) != 0:
@@ -83,7 +112,7 @@ class Block:
 
     def __ensure_no_cycles(self, block):
         farthest_ancestor = get_farthest_ancestor(self)
-        all_blocks = get_all_blocks(farthest_ancestor)
+        all_blocks = get_all_subblocks(farthest_ancestor)
         if block in all_blocks:
             raise CycleException("Block %s contains a cycle" % farthest_ancestor)
 
@@ -91,8 +120,8 @@ class Block:
         """
         Adds question to the end of the Block's list of contents.
         Labels the question with the containing block's id
+
         :param question: The question to add 
-        :return:
         """
         question.block = self.blockId
         self.contents.append(question)
@@ -101,8 +130,8 @@ class Block:
         """
         Adds a subblock to the end of the Block's list of contents.
         Labels the subblock with the containing block's id
+
         :param subblock:  The subblock to add.
-        :return:
         """
         self.__ensure_no_cycles(subblock)
         subblock.parent = self
@@ -112,6 +141,7 @@ class Block:
     def get_subblocks(self):
         """
         Returns a list of all the subblocks in the block
+
         :return: a list of Blocks
         """
         subblocks = []
@@ -123,6 +153,7 @@ class Block:
     def get_questions(self):
         """
         Returns a list of all the questions in the block
+
         :return: a list of Questions
         """
         questions = []
@@ -182,6 +213,7 @@ class Block:
     def __eq__(self, other):
         """
         True if this block has the same id as other.
+
         :param other: another Block
         :return: Boolean
         """
@@ -200,7 +232,7 @@ class Block:
         """
         Returns the JSON representation of the block
 
-        :return: `JSON block object <http://surveyman.github.io/Schemata/survey_block.json>`_
+        :return: A JSON object according to the `Block Schema <http://surveyman.github.io/Schemata/survey_block.json>`_
         """
         __id__ = "id"
         __questions__ = "questions"
