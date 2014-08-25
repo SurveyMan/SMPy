@@ -3,12 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SMPy's documentation!
-================================
 
-Contents:
+SMPy: A Python Interface to the SurveyMan DSL
+=============================================
 
-.. autosummary::
+Overview of SurveyMan csv and what this library provides.
 
 .. toctree::
    :maxdepth: 2

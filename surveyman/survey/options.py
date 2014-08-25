@@ -41,8 +41,8 @@ class Option:
     def jsonize(self):
         """
         Returns the JSON representation of the option
-        :return: A JSON object according to the schema at
-        `http://surveyman.github.io/Schemata/survey_option.json`
+
+        :return: A JSON object according to the `Option Schema <http://surveyman.github.io/Schemata/survey_option.json>`_
         """
         return json.dumps({"id" : self.opId, "otext" : self.opText})
 
@@ -51,12 +51,25 @@ class Option:
 
 
 class TextOption(Option):
+    """
+    This is a strictly text option. It inherits all of its behavior from Option.
+    """
     pass
 
 
 class HTMLOption(Option):
-
+    """
+    This option contains HTML, which this class validates.
+    """
     def __init__(self, op_html):
+        """
+        Intializes this option with HTML. The HTML is validated before initializing the option.
+        The input HTML should be a snippet and not contain the `html`, `head`, `title`, nor `body` tags.
+        Throws an HTMLValidationException if the validation produces errors.
+
+        :param op_html: The string representation of the option HTML.
+        :return:
+        """
 
         document, errors = tidy_fragment("<!DOCTYPE html><html><head><title></title><body>%s</body></html>" % op_html)
         # python is stupid

@@ -1,6 +1,5 @@
 options
-==========
+=======
 
 .. automodule:: surveyman.survey.options
-   :members:
-
+   :members: 
