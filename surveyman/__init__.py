@@ -1,1 +1,1 @@
-__all__ = ["survey", "test", "examples", "resources", "jsonValidator"]
+__all__ = ["survey", "examples", "jsonValidator"]

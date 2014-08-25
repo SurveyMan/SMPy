@@ -58,9 +58,9 @@ class Survey:
         """
         Checks that the survey branching is valid before producing the JSON representation
         Confirms that:
-            -all blocks follow either the branch-one, branch-all, or branch-none policy
-            -all branch questions branch to top-level blocks in the survey's blocklist
-            -all branches branch forward
+        -all blocks follow either the branch-one, branch-all, or branch-none policy
+        -all branch questions branch to top-level blocks in the survey's blocklist
+        -all branches branch forward
         An exception is thrown if any of these conditions are violated
         """
         # check that all blocks are either branch none, branch one, or branch all
@@ -101,8 +101,8 @@ class Survey:
     def jsonize(self):
         """
         Returns the JSON representation of the survey. This is validated against
-        `http://surveyman.github.io/Schemata/survey_input.json
-        :return: JSON
+
+        :return: `JSON Survey <http://surveyman.github.io/Schemata/survey_input.json>`_
         """
         self.validate()
         __survey__ = "survey"

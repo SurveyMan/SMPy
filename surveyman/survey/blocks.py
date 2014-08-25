@@ -199,7 +199,8 @@ class Block:
     def jsonize(self):
         """
         Returns the JSON representation of the block
-        :return: JSON block object `http://surveyman.github.io/Schemata/survey_block.json
+
+        :return: `JSON block object <http://surveyman.github.io/Schemata/survey_block.json>`_
         """
         __id__ = "id"
         __questions__ = "questions"

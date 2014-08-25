@@ -10,7 +10,8 @@ block_schema = "http://surveyman.github.io/Schemata/survey_block.json"
 
 def validate_json(instance, schema=input_schema, url=True):
     """
-    Validates the input jsonFile against the current json schema provided at `http://surveyman.github.io/Schemata/survey_input.json`
+    Validates the input jsonFile against the current `JSON Schema <http://surveyman.github.io/Schemata>`_.
+
     :param instance: A JSON object
     :param schema: The target schema.
     :param url: external source
