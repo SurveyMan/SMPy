@@ -55,6 +55,7 @@ class Question:
         else:
             self.qType = qType
         self.qText = qText
+        assert type(shuffle) is bool, type(shuffle)
         self.shuffle = shuffle
         self.branching = False
         self.branch_map = None
@@ -109,7 +110,7 @@ class Question:
 
         :param other: Question to compare self to.
         """
-        return type(other) == Question.__class__ and self.qId == other.qid
+        return isinstance(other, Question) and self.qId == other.qid
 
     def __str__(self):
         text = "Question ID: " + str(self.qId) + " Question type: " + self.qType + "\n"
@@ -124,26 +125,36 @@ class Question:
 
         :return: A JSON object according to the `Question Schema <http://surveyman.github.io/Schemata/survey_question.json>`_.
         """
+        __id__ = "id"
+        __qtext__ = "qtext"
+        __options__ = "options"
+        __branchMap__ = "branchMap"
+        __freetext_key__ = "freetext"
+        __answer__ = "answer"
+        __randomize__ = "randomize"
+        __ordered__ = "ordered"
+        __exclusive__ = "exclusive"
+        __permitBreakoff__ = "permitBreakoff"
 
-        output = {"id": self.qId, "qtext": self.qText, "breakoff": self.breakoff}
+        output = {__id__: self.qId, __qtext__: self.qText, __permitBreakoff__: self.breakoff}
 
         if self.qType is __instruction__:
             return json.dumps(output)
 
         if self.qType is __freetext__:
             if (type(self.freetext) is bool and self.freetext) or type(self.freetext) is str:
-                output["freetext"] = self.freetext
+                output[__freetext_key__] = self.freetext
             elif type(self.freetext) is type(re.compile("")):
-                output["freetext"] = str("#{%s}" % self.freetext.pattern)
+                output[__freetext_key__] = str("#{%s}" % self.freetext.pattern)
             return json.dumps(output)
 
-        output["options"] = [json.loads(o.jsonize()) for o in self.options]
-        output["randomize"] = self.shuffle
-        output["ordered"] = self.qType is __likert__
-        output["exclusive"] = self.qType in [__likert__, __oneof__]
+        output[__options__] = [json.loads(o.jsonize()) for o in self.options]
+        output[__randomize__] = self.shuffle
+        output[__ordered__] = self.qType is __likert__
+        output[__exclusive__] = self.qType in [__likert__, __oneof__]
 
         if self.branch_map is not None:
-            output["options"] = self.branch_map.jsonize()
+            output[__branchMap__] = json.loads(self.branch_map.jsonize())
 
         return json.dumps(output)
 
@@ -154,7 +165,7 @@ class Instruction(Question):
     """
 
     def __init__(self, qText):
-        Question.__init__(self, "instruction", qText)
+        Question.__init__(self, __instruction__, qText)
 
 
 class FreeText(Question):
@@ -175,13 +186,13 @@ class FreeText(Question):
             raise QuestionTypeException("Freetext questions cannot have both a regex and a default value.")
         if regex is not None:
             if type(regex) is str:
-                Question.__init__(self, "freetext", qText, freetext=re.compile(regex))
+                Question.__init__(self, __freetext__, qText, freetext=re.compile(regex))
             elif type(regex) is type(re.compile("")):
-                Question.__init__(self, "freetext", qText, freetext=regex)
+                Question.__init__(self, __freetext__, qText, freetext=regex)
             else:
                 raise QuestionTypeException("Unknown regular expression type: %s (recongized values are %s and %s)" %
                                             (type(regex), str, type(re.compile(""))))
         elif default is not None:
-            Question.__init__(self, "freetext", qText, freetext=default)
+            Question.__init__(self, __freetext__, qText, freetext=default)
         else:
-            Question.__init__(self, "freetext", qText, freetext=True)
+            Question.__init__(self, __freetext__, qText, freetext=True)

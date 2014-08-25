@@ -12,6 +12,7 @@ The `Javascript SurveyMan Interpreter <http://surveyman.github.io/surveyman.js>`
 choice of branch target to runtime.
 """
 
+
 class Constraint:
     """
     The Constraint object defines a mapping of a question's options to blocks
@@ -56,11 +57,11 @@ class Constraint:
         :param op: The Option object associated with this Constraint
         :param block: The target destination for branching
         """
-        for i in range(len(self.question.options)):
-            if self.question.options[i].equals(op):
-                self.constraintMap[i] = (op.opid, block.blockId)
+        for (i, o) in enumerate(self.question.options):
+            if o == op:
+                self.constraintMap[i] = (op.opId, block.blockId)
                 return
-        raise NoSuchOptionException("Question "+self.question.quid+" does not contain option "+op.id)
+        raise NoSuchOptionException("Question %s does not contain option %s" % (self.question, op))
 
     def add_branch_by_op_text(self, opText, block):
         """
@@ -74,7 +75,7 @@ class Constraint:
             if self.question.options[i].opText == opText:
                 self.constraintMap[i] = (self.question.options[i].opId, block.blockId)
                 return
-        raise NoSuchOptionException("Question "+self.question.quid+" does not contain option \""+opText+'\"')
+        raise NoSuchOptionException("Question "+self.question.qId+" does not contain option \""+opText+'\"')
 
     def get_blocks(self):
         """

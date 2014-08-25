@@ -36,7 +36,7 @@ class Option:
         :param other: the Option to compare with
         :return:
         """
-        return type(other) == Option.__class__ and self.opId == other.opId
+        return isinstance(other, Option) and self.opId == other.opId
 
     def jsonize(self):
         """
@@ -47,7 +47,7 @@ class Option:
         return json.dumps({"id" : self.opId, "otext" : self.opText})
 
     def __str__(self):
-        return self.opText
+        return self.opId+": "+self.opText
 
 
 class TextOption(Option):

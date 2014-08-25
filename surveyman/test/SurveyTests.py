@@ -6,6 +6,8 @@ import surveyman.examples.SimpleSurvey as simple
 import surveyman.examples.example_survey as example
 import surveyman.examples.subblock_example as sub
 from surveyman.survey.blocks import *
+from surveyman.survey.surveys import *
+from surveyman.survey.constraints import *
 from surveyman.survey.questions import __likert__, __instruction__, __checkbox__, __freetext__
 from surveyman.survey.blocks import __branch_none__
 
@@ -16,19 +18,21 @@ class SurveyTests(unittest.TestCase):
         self.ex1 = simple.create_survey()
         self.ex2 = example.create_survey()
         self.ex3 = sub.create_survey()
+        self.s = Survey([Block([])], [])
 
     def test_add_block(self):
-        pass
+        b = Block([Question(__instruction__, "")])
+        self.s.add_block(b)
+        self.assertEqual(self.s.blockList.index(b), 1)
+        b.add_question(FreeText(""))
+        self.assertEqual(len(self.s.blockList[-1].contents), 2)
 
     def test_add_block_by_index(self):
-        pass
-
-    def test_validate(self):
-        pass
+        self.s.add_block_by_index(Block([]), 2)
+        self.s.add_block_by_index(Block([]), 10)
 
     def test_jsonize(self):
-        for ex in [self.ex1, self.ex2, self.ex3]:
-            print ex.jsonize(), "\n"
+        for ex in [self.s, self.ex1, self.ex2, self.ex3]:
             validator.validate_json(json.loads(ex.jsonize()))
 
 
@@ -144,27 +148,40 @@ class BlockTests(unittest.TestCase):
 
 class ConstraintTests(unittest.TestCase):
 
-    def test_branch_validity(self):
-        pass
+    def setUp(self):
+        self.q = Question(__checkbox__, "", [TextOption(str(a)) for a in range(4)])
+        self.outer_block_1 = Block([self.q])
+        self.outer_block_2 = Block([])
+        self.constraint = Constraint(self.q)
 
     def test_add_branch_by_index(self):
-        # add a branch option I know works
-        # add a branch option I know will raise an exception
-        pass
+        self.constraint.add_branch_by_index(0, self.outer_block_2)
+        self.assertRaises(IndexError, self.constraint.add_branch_by_index, 10, self.outer_block_2)
 
     def test_add_branch(self):
-        # add a branch option I know works
-        # add a branch option I know will raise an exception
-        pass
+        opt = self.q.options[1]
+        self.constraint.add_branch(opt, self.outer_block_2)
+        opt2 = TextOption("")
+        self.assertRaises(NoSuchOptionException, self.constraint.add_branch, opt2, self.outer_block_2)
 
     def test_add_branch_by_op_text(self):
-        # add a branch option I know works
-        # add a branch option I know will raise an exception
-        pass
+        self.constraint.add_branch_by_op_text("2", self.outer_block_2)
+        self.assertRaises(NoSuchOptionException, self.constraint.add_branch_by_op_text, "asdf", self.outer_block_2)
 
     def test_get_blocks(self):
         # add a bunch of constraints and see if we get the right stuff back
-        pass
+        b1, b2 = Block([]), Block([])
+        self.constraint.add_branch_by_op_text("0", self.outer_block_2)
+        self.constraint.add_branch(self.q.options[2], b1)
+        self.constraint.add_branch_by_index(3, b2)
+        self.assertItemsEqual(self.constraint.get_blocks(), [self.outer_block_2.blockId, b1.blockId, b2.blockId, NEXT])
 
     def test_jsonize(self):
-        pass
+        b1, b2 = Block([]), Block([])
+        self.constraint.add_branch_by_op_text("0", self.outer_block_2)
+        self.constraint.add_branch(self.q.options[2], b1)
+        self.constraint.add_branch_by_index(3, b2)
+        json1 = self.outer_block_1.jsonize()
+        json2 = self.outer_block_2.jsonize()
+        validator.validate_json(json.loads(json1), schema=validator.block_schema)
+        validator.validate_json(json.loads(json2), schema=validator.block_schema)

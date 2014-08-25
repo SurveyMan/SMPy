@@ -19,7 +19,7 @@ def create_survey():
     q1.add_option("Other")
     #print q1
     #question 2
-    q2 = Question(oneof, "What is your year of birth?", [Option(str(x)) for x in range(1950, 1996)], [])
+    q2 = Question(oneof, "What is your year of birth?", [Option(str(x)) for x in range(1950, 1996)])
     #print q2
     #question 3
     q3 = Question(oneof, "Which of the following best describes your highest achieved education level?", [])

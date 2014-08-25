@@ -52,3 +52,4 @@ lein
 local-mvn
 *egg*
 dist
+docs/_build

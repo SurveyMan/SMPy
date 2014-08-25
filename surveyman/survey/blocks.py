@@ -31,7 +31,7 @@ def get_farthest_ancestor(block):
     :return: A Block
     """
 
-    assert(isinstance(block, Block))
+    assert isinstance(block, Block), type(block)
 
     if block.parent is None:
         return block
@@ -108,7 +108,7 @@ class Block:
         if len(self.contents) != 0:
             for q in self.contents:
                 if isinstance(q, Question):
-                    q.block = self.blockId
+                    q.block = self
 
     def __ensure_no_cycles(self, block):
         farthest_ancestor = get_farthest_ancestor(self)
@@ -123,7 +123,7 @@ class Block:
 
         :param question: The question to add 
         """
-        question.block = self.blockId
+        question.block = self
         self.contents.append(question)
 
     def add_subblock(self, subblock):

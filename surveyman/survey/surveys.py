@@ -2,6 +2,7 @@ __author__ = "mmcmahon13"
 
 import json
 from surveyman.survey.constraints import NEXT
+from surveyman.survey.blocks import get_farthest_ancestor
 from __ids__ import *
 from survey_exceptions import *
 
@@ -44,14 +45,12 @@ class Survey:
 
     def add_block_by_index(self, block, index):
         """
-        Adds a top level block to the desired index in the survey's block list
-        Throws index out of bounds exception if index is out of the list's range
+        Adds a top level block to the desired index in the survey's block list.
+        If the index is out of range, just inserts in the last position.
 
         :param block: The block to add to the top level of the survey
         :param index: The index at which the block should be added
         """
-        # add block at certain index
-        #throws index out of bounds exception (?)
         self.blockList.insert(index, block)
 
     def validate(self):
@@ -85,10 +84,10 @@ class Survey:
         for c in self.constraints:
             branch_question = c.question
             #print branchQuestion.block
-            block_id = branch_question.block.split(".")[0]
-            survey_block_ids = [b.blockId for b in self.blockList]
+            topmost_enclosing_block_id = get_farthest_ancestor(branch_question.block).blockId
+            block_ids = [b.blockId for b in self.blockList]
             for bid in c.get_blocks():
-                if bid is not NEXT and survey_block_ids.index(block_id) >= survey_block_ids.index(bid):
+                if bid is not NEXT and block_ids.index(topmost_enclosing_block_id) >= block_ids.index(bid):
                     raise InvalidBranchException("Question " + branch_question.qText + " does not branch forward")
 
     def __str__(self):
@@ -109,6 +108,8 @@ class Survey:
         __breakoff__ = "breakoff"
         __correlation__ = "correlation"
         __otherValues__ = "otherValues"
+
         output = {__survey__: [json.loads(b.jsonize()) for b in self.blockList], __breakoff__: self.hasBreakoff,
                   __correlation__: {}, __otherValues__: {}}
+
         return json.dumps(output)
