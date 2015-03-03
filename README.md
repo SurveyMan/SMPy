@@ -10,6 +10,14 @@ To download, run
 
 `pip install SMPy`
 
+Start Python and call
+
+`python> import surveyman`
+
+Alternately, clone this repository and run
+
+`python setup.py install`.
+
 See `examples/example_survey.py` for how to use this library.
 
 Requirements
@@ -20,5 +28,4 @@ Requirements
 
 Contributors
 ===========
-
-This library is primarily the work of @mmcmahon13. 
+This library is primarily the work of @mmcmahon13, with guidance and packaging help from @etosch.
