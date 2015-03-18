@@ -5,7 +5,7 @@ from setuptools import find_packages
 
 setup(
     name='SMPy',
-    version='1.0.2',
+    version='1.0.3',
     author='Emma Tosch',
     author_email='etosch@cs.umass.edu',
     packages=find_packages(),
