@@ -1,14 +1,14 @@
 #!/usr/bin/python2.7
 
 from distutils.core import setup
-#from setuptools import setup, find_packages
+from setuptools import find_packages
 
 setup(
     name='SMPy',
     version='1.0.2',
     author='Emma Tosch',
     author_email='etosch@cs.umass.edu',
-    packages=['surveyman', 'surveyman.test', 'surveyman.survey'],
+    packages=find_packages(),
     package_data={'': ['*.json', 'VERSION']},
     url='http://surveyman.github.io/SMPy',
     license='CRAPL',
