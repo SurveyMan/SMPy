@@ -1,10 +1,10 @@
 __author__ = "mmcmahon13"
 
 import json
-from surveyman.survey.constraints import NEXT
-from surveyman.survey.blocks import get_farthest_ancestor
+from .constraints import NEXT
+from .blocks import get_farthest_ancestor, NEXTBLOCK
 from __ids__ import *
-from survey_exceptions import *
+from .survey_exceptions import *
 
 __surveyGen__ = IdGenerator("s")
 
@@ -28,10 +28,10 @@ class Survey:
         """
         # generate ID
         self.surveyID = __surveyGen__.generateID()
-        #survey is a list of blocks, which hold questions and subblocks
-        #at least one block with all the questions in it
+        # survey is a list of blocks, which hold questions and subblocks
+        # at least one block with all the questions in it
         self.blockList = blocklist
-        #list of branching constraints
+        # list of branching constraints
         self.constraints = constraints
         self.hasBreakoff = breakoff
 
@@ -63,31 +63,26 @@ class Survey:
         An exception is thrown if any of these conditions are violated
         """
         # check that all blocks are either branch none, branch one, or branch all
-        #change so that it checks subblocks for branching also?
+        # change so that it checks subblocks for branching also?
         for b in self.blockList:
             b.valid_branch_number()
 
-        #check that all branches branch to top level blocks in the survey
+        # check that all branches branch to top level blocks in the survey
         for c in self.constraints:
-            for bid in c.get_blocks():
-                survey_has_block = False
-                for b in self.blockList:
-                    #print("survey block: "+b.blockid + " " +"block branched to: "+bid)
-                    if b.blockId == bid or bid is NEXT:
-                        survey_has_block = True
-                        break
-                if not survey_has_block:
+            for (_, block) in c.constraintMap:
+                if block != NEXTBLOCK and block not in self.blockList:
                     raise InvalidBranchException(
-                        "Question " + c.question.qText + " does not branch to a block in survey")
+                        "Branch target \n\t %s \n not found in the survey \n %s." % (block, self))
 
-        #check that all branches branch forward 
+        # check that all branches branch forward
         for c in self.constraints:
             branch_question = c.question
-            #print branchQuestion.block
-            topmost_enclosing_block_id = get_farthest_ancestor(branch_question.block).blockId
-            block_ids = [b.blockId for b in self.blockList]
-            for bid in c.get_blocks():
-                if bid is not NEXT and block_ids.index(topmost_enclosing_block_id) >= block_ids.index(bid):
+            # print branchQuestion.block
+            topmost_enclosing_block = get_farthest_ancestor(branch_question.block)
+            for block in c.get_blocks():
+                if topmost_enclosing_block not in self.blockList:
+                    raise InvalidBranchException("Block %s not in survey block list." % topmost_enclosing_block)
+                if block != NEXTBLOCK and self.blockList.index(topmost_enclosing_block) >= self.blockList.index(block):
                     raise InvalidBranchException("Question " + branch_question.qText + " does not branch forward")
 
     def __str__(self):
@@ -109,7 +104,9 @@ class Survey:
         __correlation__ = "correlation"
         __otherValues__ = "otherValues"
 
-        output = {__survey__: [json.loads(b.jsonize()) for b in self.blockList], __breakoff__: self.hasBreakoff,
-                  __correlation__: {}, __otherValues__: {}}
+        output = {__survey__: [json.loads(b.jsonize()) for b in self.blockList],
+                  __breakoff__: self.hasBreakoff,
+                  __correlation__: {},
+                  __otherValues__: {}}
 
         return json.dumps(output)

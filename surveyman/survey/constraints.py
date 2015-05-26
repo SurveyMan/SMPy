@@ -1,10 +1,9 @@
-__author__ = 'mmcmahon13'
-
 import json
 from __ids__ import *
-from survey_exceptions import *
-
-__constraintGen__ = IdGenerator("c")
+import questions
+import survey_exceptions as se
+import blocks
+__constraintGen__ = IdGenerator("c_")
 
 NEXT = "NEXT"
 """
@@ -29,14 +28,14 @@ class Constraint:
         :param question: The question associated with this constraint
         """
         self.cid = __constraintGen__.generateID()
-        #add check here to make sure survey contains question
+        # add check here to make sure survey contains question
         question.branching = True
         question.branch_map = self
         self.question = question
-        #holds list of tuples (opid, blockid)
+        # holds list of tuples (opid, blockid)
         self.constraintMap = []
         for o in self.question.options:
-            self.constraintMap.append((o.opId, NEXT))
+            self.constraintMap.append((o, blocks.NEXTBLOCK))
 
     def add_branch_by_index(self, opIndex, block):
         """
@@ -46,7 +45,7 @@ class Constraint:
         :param opIndex: The option index associated with this Constraint
         :param block: The target destination for branching
         """
-        #throws index out of bounds exception
+        # throws index out of bounds exception
         self.constraintMap[opIndex] = (self.question.options[opIndex].opId, block.blockId)
 
     def add_branch(self, op, block):
@@ -57,11 +56,13 @@ class Constraint:
         :param op: The Option object associated with this Constraint
         :param block: The target destination for branching
         """
+        if isinstance(block, questions.Question):
+            block = block.block
         for (i, o) in enumerate(self.question.options):
             if o == op:
-                self.constraintMap[i] = (op.opId, block.blockId)
+                self.constraintMap[i] = (op, block)
                 return
-        raise NoSuchOptionException("Question %s does not contain option %s" % (self.question, op))
+        raise se.NoSuchOptionException("Question %s does not contain option %s" % (self.question, op))
 
     def add_branch_by_op_text(self, opText, block):
         """
@@ -75,7 +76,7 @@ class Constraint:
             if self.question.options[i].opText == opText:
                 self.constraintMap[i] = (self.question.options[i].opId, block.blockId)
                 return
-        raise NoSuchOptionException("Question "+self.question.qId+" does not contain option \""+opText+'\"')
+        raise se.NoSuchOptionException("Question "+self.question.qId+" does not contain option \""+opText+'\"')
 
     def get_blocks(self):
         """
@@ -100,4 +101,4 @@ class Constraint:
 
         :return: JSON representation according to the `Constraint Schema <http://surveyman.github.io/Schemata/survey_branchMap.json>`_.
         """
-        return json.dumps({opid : blockid for (opid, blockid) in self.constraintMap})
+        return json.dumps({o.opId: b.blockId for (o, b) in self.constraintMap})

@@ -1,7 +1,9 @@
-__author__ = 'mmcmahon13'
-from surveyman.survey.options import *
-import __ids__
+import json
 import re
+import __ids__
+import options
+import survey_exceptions as se
+import blocks
 
 __qGen__ = __ids__.IdGenerator("q_")
 __likert__ = "likert"
@@ -51,7 +53,7 @@ class Question:
         #call generateID
         self.qId = __qGen__.generateID()
         if qType not in qTypes:
-            raise NoSuchQuestionTypeException("%s not in {%s}" % (qType, ",".join(qTypes)))
+            raise se.NoSuchQuestionTypeException("%s not in {%s}" % (qType, ",".join(qTypes)))
         else:
             self.qType = qType
         self.qText = qText
@@ -59,7 +61,7 @@ class Question:
         self.shuffle = shuffle
         self.branching = False
         self.branch_map = None
-        self.block = None
+        self.block = blocks.Block(contents=[self])
         self.breakoff = breakoff
         self.freetext = freetext
         self.options = options
@@ -73,12 +75,12 @@ class Question:
         :param o: Option to add to this questions' option list.
         """
         if self.qType in [__instruction__, __freetext__]:
-            raise QuestionTypeException("Questions of type %s cannot have options." % self.qType)
+            raise se.QuestionTypeException("Questions of type %s cannot have options." % self.qType)
         if type(o) is str:
             try:
-                self.options.append(HTMLOption(o))
-            except HTMLValidationException:
-                self.options.append(TextOption(o))
+                self.options.append(options.HTMLOption(o))
+            except se.HTMLValidationException:
+                self.options.append(options.TextOption(o))
         else:
             self.options.append(o)
 
@@ -92,15 +94,15 @@ class Question:
         :param o: Either the text or html of a survey object, or an option object.
         """
         if self.qType in [__instruction__, __freetext__]:
-            raise QuestionTypeException("Questions of type %s cannot have options." % self.qType)
+            raise se.QuestionTypeException("Questions of type %s cannot have options." % self.qType)
         if index > len(self.options):
             for i in range(len(self.options), index):
-                self.options.append(Option(""))
+                self.options.append(options.Option(""))
         if type(o) is str:
             try:
-                self.options.insert(index, HTMLOption(o))
-            except HTMLValidationException:
-                self.options.insert(index, TextOption(o))
+                self.options.insert(index, options.HTMLOption(o))
+            except se.HTMLValidationException:
+                self.options.insert(index, options.TextOption(o))
         else:
             self.options.insert(index, o)
 
@@ -118,6 +120,10 @@ class Question:
         for o in self.options:
             text = text + "\t" + str(o) + "\n"
         return text
+
+    def __repr__(self):
+        return "Question(%s, %s, options=[%s], shuffle=%b, freetext=%s, breakoff=%b)" % (
+            self.qType, self.qText, ",".join(self.options), self.shuffle, self.freetext, self.breakoff)
 
     def jsonize(self):
         """
@@ -183,16 +189,25 @@ class FreeText(Question):
         :param default: Default text appearing in a freetext box.
         """
         if regex is not None and default is not None:
-            raise QuestionTypeException("Freetext questions cannot have both a regex and a default value.")
+            raise se.QuestionTypeException("Freetext questions cannot have both a regex and a default value.")
         if regex is not None:
             if type(regex) is str:
                 Question.__init__(self, __freetext__, qText, freetext=re.compile(regex))
             elif type(regex) is type(re.compile("")):
                 Question.__init__(self, __freetext__, qText, freetext=regex)
             else:
-                raise QuestionTypeException("Unknown regular expression type: %s (recongized values are %s and %s)" %
+                raise se.QuestionTypeException("Unknown regular expression type: %s (recognized values are %s and %s)" %
                                             (type(regex), str, type(re.compile(""))))
         elif default is not None:
             Question.__init__(self, __freetext__, qText, freetext=default)
         else:
             Question.__init__(self, __freetext__, qText, freetext=True)
+
+
+class RadioButtonQuestion(Question):
+    """ Convenience class for radio button questions.
+    """
+
+    def __init__(self, qText, options=[]):
+        Question.__init__(self, __oneof__, qText, options, shuffle=True, freetext=False, breakoff=True)
+
