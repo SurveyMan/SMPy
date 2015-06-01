@@ -12,7 +12,8 @@ import surveyman.survey.surveys as surveys
 import surveyman.survey.blocks as blocks
 import surveyman.survey.options as options
 import surveyman.survey.constraints as constraints
-from surveyman.survey.questions import __instruction__, __likert__, __checkbox__, __freetext__, __branch_none__
+from surveyman.survey.questions import __instruction__, __likert__, __checkbox__, __freetext__
+from surveyman.survey.blocks import __branch_none__
 
 class SurveyTests(unittest.TestCase):
 
@@ -177,7 +178,7 @@ class ConstraintTests(unittest.TestCase):
         self.constraint.add_branch_by_op_text("0", self.outer_block_2)
         self.constraint.add_branch(self.q.options[2], b1)
         self.constraint.add_branch_by_index(3, b2)
-        self.assertItemsEqual(self.constraint.get_blocks(), [self.outer_block_2.blockId, b1.blockId, b2.blockId, questions.NEXT])
+        self.assertItemsEqual(self.constraint.get_blocks(), [self.outer_block_2.blockId, b1.blockId, b2.blockId, constraints.NEXT])
 
     def test_jsonize(self):
         b1, b2 = blocks.Block([]), blocks.Block([])

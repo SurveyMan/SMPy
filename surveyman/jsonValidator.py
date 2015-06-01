@@ -17,7 +17,18 @@ def validate_json(instance, schema=input_schema, url=True):
     :param url: external source
     """
     if url:
-        this_schema = urllib2.urlopen(schema).read()
+        if len(schema) == 1:
+            schemata = [schema]
+        else:
+            schemata = schema
+        for s in schema:
+            try:
+                this_schema = urllib2.urlopen(schema).read()
+                break
+            except urllib2.URLError:
+                print "add logging"
+        if not this_schema:
+            raise ValueError("Schema never initialized.")
     else:
         this_schema = schema
     jsonschema.validate(instance, json.loads(this_schema))

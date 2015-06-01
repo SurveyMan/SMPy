@@ -1,9 +1,10 @@
 import unittest
-from surveyman.survey.blocks import *
 import surveyman.examples.subblock_example as sbEx
 import surveyman.examples.example_survey as ex
 import surveyman.examples.SimpleSurvey as simpEx
-
+import surveyman.survey.blocks as blocks
+import surveyman.survey.questions as questions
+import surveyman.survey.options as options
 
 class BlockTests(unittest.TestCase):
 
@@ -35,9 +36,9 @@ class BlockTests(unittest.TestCase):
      
     def test_add_blocks(self):
         print("Running add block test")
-        block1 = Block([])
-        block1.add_question(Question("oneof", "this is a question", [Option("pick me")]))
-        block2 = Block([])
+        block1 = blocks.Block([])
+        block1.add_question(questions.Question("oneof", "this is a question", [options.Option("pick me")]))
+        block2 = blocks.Block([])
         block1.add_subblock(block2)
         self.assertEqual(self.count_blocks([block1]),2)
 
