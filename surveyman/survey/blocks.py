@@ -1,6 +1,8 @@
-__author__ = 'mmcmahon13'
+import json
 from __ids__ import *
-from surveyman.survey.questions import *
+import questions
+import survey_exceptions as se
+import constraints
 
 __blockGen__ = IdGenerator("b_")
 __branch_one__ = "branch-one"
@@ -107,14 +109,14 @@ class Block:
         """
         if len(self.contents) != 0:
             for q in self.contents:
-                if isinstance(q, Question):
+                if isinstance(q, questions.Question):
                     q.block = self
 
     def __ensure_no_cycles(self, block):
         farthest_ancestor = get_farthest_ancestor(self)
         all_blocks = get_all_subblocks(farthest_ancestor)
         if block in all_blocks:
-            raise CycleException("Block %s contains a cycle" % farthest_ancestor)
+            raise se.CycleException("Block %s contains a cycle" % farthest_ancestor)
 
     def add_question(self, question):
         """
@@ -156,13 +158,13 @@ class Block:
 
         :return: a list of Questions
         """
-        questions = []
+        my_questions = []
         for c in self.contents:
-            if isinstance(c, Question):
-                questions.append(c)
-        return questions
+            if isinstance(c, questions.Question):
+                my_questions.append(c)
+        return my_questions
 
-    #rethinking how this is done, may move check to Survey object instead
+    # rethinking how this is done, may move check to Survey object instead
     def valid_branch_number(self):
         """
         Checks if there are a valid number of branch questions in the block.
@@ -179,34 +181,35 @@ class Block:
                 branching.append(q)
 
         if len(branching) == 1:
-            #if block contains a branch question, check that none of the subblocks are branch-one
+            # if block contains a branch question, check that none of the subblocks are branch-one
             for b in self.get_subblocks():
                 if b.valid_branch_number() == __branch_one__:
-                    raise InvalidBranchException("Branch-one block cannot contain a branch-one subblock")
+                    raise se.InvalidBranchException("Branch-one block cannot contain a branch-one subblock")
             return __branch_one__
         elif len(branching) is num_questions and len(branching) is not 0:
-            #for branch all: check that all questions branch to the same block(s)
+            # for branch all: check that all questions branch to the same block(s)
             blocks_branched_to = None
             if len(branching) is not 0 and branching[0].branch_map is not None:
                 blocks_branched_to = branching[0].branch_map.get_blocks()
             for q in branching:
                 if q.branch_map is not None:
                     if q.branch_map.get_blocks() != blocks_branched_to:
-                        raise InvalidBranchException("Block branches to different destinations")
-            #check that block does not contain subblocks if branch-all
+                        raise se.InvalidBranchException("Block branches to different destinations")
+            # check that block does not contain subblocks if branch-all
             if len(self.get_subblocks()) is not 0:
-                raise InvalidBranchException("Branch-all block cannot contain subblocks")
+                raise se.InvalidBranchException("Branch-all block cannot contain subblocks")
             return __branch_all__
         elif len(branching) is not 0:
-            #throw invalid branch exception
-            raise InvalidBranchException("Block contains too many branch questions")
+            # throw invalid branch exception
+            raise se.InvalidBranchException("Block %s contains too many branch questions: %s" % (
+                self.blockId, "\n".join([q.__str__() for q in self.get_questions()])))
         else:
             subblock_types = []
             for b in self.get_subblocks():
                 subblock_types.append(b.valid_branch_number())
-            #if there is a branch-one subblock, all of its siblings must be either branch-none or branch-all
+            # if there is a branch-one subblock, all of its siblings must be either branch-none or branch-all
             if subblock_types.count("branch-one") > 1:
-                raise InvalidBranchException("Block has too many branch-one subblocks")
+                raise se.InvalidBranchException("Block has too many branch-one subblocks")
             else:
                 return __branch_none__
 
@@ -240,11 +243,21 @@ class Block:
         __subblocks__ = "subblocks"
         output = {__id__: self.blockId, __questions__: [], __randomize__: self.randomize, __subblocks__: []}
         for thing in self.contents:
-            if isinstance(thing, Question):
+            if isinstance(thing, questions.Question):
                 output[__questions__].append(json.loads(thing.jsonize()))
             elif isinstance(thing, Block):
                 output[__subblocks__].append(json.loads(thing.jsonize()))
             else:
-                raise UnknownContentsException("Block %s has contents %s. Only %s and %s are permitted." %
-                                               (self.blockId, type(thing), Question.__class__, Block.__class__))
+                raise se.UnknownContentsException("Block %s has contents %s. Only %s and %s are permitted." %
+                                                  (self.blockId, type(thing), questions.Question.__class__,
+                                                   Block.__class__))
         return json.dumps(output)
+
+
+class NEXTBLOCK(Block):
+
+    blockId = constraints.NEXT
+
+    def __init__(self):
+        raise Exception("NEXTBLOCK is used as a token; should never be instantiated.")
+

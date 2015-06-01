@@ -1,7 +1,4 @@
-__author__ = 'etosch'
-
 import json
-from survey_exceptions import *
 from abc import ABCMeta
 from tidylib import tidy_fragment
 import __ids__
@@ -25,9 +22,9 @@ class Option:
         :param op_text:  The text to display (may be HTML)
         :return:
         """
-        #initialize option text field
+        # initialize option text field
         self.opText = op_text
-        #generate id for option
+        # generate id for option
         self.opId = __opGen__.generateID()
 
     def __eq__(self, other):
@@ -44,7 +41,7 @@ class Option:
 
         :return: A JSON object according to the `Option Schema <http://surveyman.github.io/Schemata/survey_option.json>`_
         """
-        return json.dumps({"id" : self.opId, "otext" : self.opText})
+        return json.dumps({"id": self.opId, "otext": self.opText})
 
     def __str__(self):
         return self.opId+": "+self.opText
