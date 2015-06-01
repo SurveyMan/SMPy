@@ -54,3 +54,4 @@ local-mvn
 dist
 docs/_build
 ex*
+MANIFEST
