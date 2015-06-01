@@ -2,6 +2,7 @@ import json
 from abc import ABCMeta
 from tidylib import tidy_fragment
 import __ids__
+from surveyman.survey.survey_exceptions import HTMLValidationException
 
 __opGen__ = __ids__.IdGenerator("comp_")
 

@@ -1,51 +1,53 @@
 #example of invalid branching
 #based on https://github.com/etosch/SurveyMan/blob/master/data/tests/test4_two_branches_one_block.csv
-from surveyman.survey.surveys import *
-from surveyman.survey.blocks import *
-from surveyman.survey.constraints import *
+import surveyman.survey.surveys as surveys
+import surveyman.survey.blocks as blocks
+import surveyman.survey.constraints as constraints
+import surveyman.survey.questions as questions
+import surveyman.survey.options as options
 
 
 def create_survey():
     
     oneof = "oneof"
     
-    q1 = Question(oneof, "Question 1", [Option("foo"), Option("bar"), Option("baz")])
-    q2 = Question(oneof, "Question 2", [Option("boo"), Option("far"), Option("faz")])
-    q3 = Question(oneof, "Question 3", [Option("eggs"), Option("ham")])
+    q1 = questions.Question(oneof, "Question 1", [options.Option("foo"), options.Option("bar"), options.Option("baz")])
+    q2 = questions.Question(oneof, "Question 2", [options.Option("boo"), options.Option("far"), options.Option("faz")])
+    q3 = questions.Question(oneof, "Question 3", [options.Option("eggs"), options.Option("ham")])
 
-    block1 = Block([q1, q2, q3])
+    block1 = blocks.Block([q1, q2, q3])
 
-    q4 = Question(oneof, "Question 4", [Option("oscar"), Option("lucille"), Option("george")])
-    q5 = Question(oneof, "Question 5", [Option("maeby"), Option("george")])
-    q6 = Question(oneof, "Question 6", [Option("gob"), Option("lindsay")])
-    q7 = Question(oneof, "Question 7", [Option("anne veal"), Option("gene parmesean")])
+    q4 = questions.Question(oneof, "Question 4", [options.Option("oscar"), options.Option("lucille"), options.Option("george")])
+    q5 = questions.Question(oneof, "Question 5", [options.Option("maeby"), options.Option("george")])
+    q6 = questions.Question(oneof, "Question 6", [options.Option("gob"), options.Option("lindsay")])
+    q7 = questions.Question(oneof, "Question 7", [options.Option("anne veal"), options.Option("gene parmesean")])
 
-    block2 = Block([q4, q5, q6, q7])
+    block2 = blocks.Block([q4, q5, q6, q7])
 
     #didn't add all options
-    q8 = Question(oneof, "Question 8", [Option("lupe"), Option("marky mark"), Option("tony wonder")])
-    q9 = Question(oneof, "Question 9", [Option("whooopsie"), Option("daisy")])
+    q8 = questions.Question(oneof, "Question 8", [options.Option("lupe"), options.Option("marky mark"), options.Option("tony wonder")])
+    q9 = questions.Question(oneof, "Question 9", [options.Option("whooopsie"), options.Option("daisy")])
 
-    block3 = Block([q8, q9])
+    block3 = blocks.Block([q8, q9])
 
-    q10 = Question(oneof, "Her?", [])
+    q10 = questions.Question(oneof, "Her?", [])
 
-    block4 = Block([q10])
+    block4 = blocks.Block([q10])
 
-    q11 = Question(oneof, "Would you mind telling us how this survey made you feel?", [])
+    q11 = questions.Question(oneof, "Would you mind telling us how this survey made you feel?", [])
 
-    block5 = Block([q11])
+    block5 = blocks.Block([q11])
 
-    q12 = Question(oneof, "Did someone say wonder?", [])
+    q12 = questions.Question(oneof, "Did someone say wonder?", [])
 
-    block6 = Block([q12])
+    block6 = blocks.Block([q12])
 
-    branch1 = Constraint(q3)
+    branch1 = constraints.Constraint(q3)
     branch1.add_branch_by_op_text("eggs", block2)
     branch1.add_branch_by_op_text("ham", block3)
 
     #branch backwards
-    branch2 = Constraint(q7)
+    branch2 = constraints.Constraint(q7)
     branch2.add_branch_by_index(0, block1)
     branch2.add_branch_by_index(1, block1)
 
@@ -53,6 +55,6 @@ def create_survey():
     block_list = [block1, block2, block3, block4, block5, block6]
     branch_list = [branch1, branch2]
 
-    survey = Survey(block_list, branch_list)
+    survey = surveys.Survey(block_list, branch_list)
 
     return survey

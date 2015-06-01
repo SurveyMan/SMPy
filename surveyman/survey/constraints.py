@@ -3,9 +3,9 @@ from __ids__ import *
 import questions
 import survey_exceptions as se
 import blocks
+
 __constraintGen__ = IdGenerator("c_")
 
-NEXT = "NEXT"
 """
 The `Javascript SurveyMan Interpreter <http://surveyman.github.io/surveyman.js>`_ uses the NEXT pointer to defer the
 choice of branch target to runtime.
@@ -46,7 +46,7 @@ class Constraint:
         :param block: The target destination for branching
         """
         # throws index out of bounds exception
-        self.constraintMap[opIndex] = (self.question.options[opIndex].opId, block.blockId)
+        self.constraintMap[opIndex] = (self.question.options[opIndex], block)
 
     def add_branch(self, op, block):
         """
@@ -74,7 +74,7 @@ class Constraint:
         """
         for i in range(len(self.question.options)):
             if self.question.options[i].opText == opText:
-                self.constraintMap[i] = (self.question.options[i].opId, block.blockId)
+                self.constraintMap[i] = (self.question.options[i], block)
                 return
         raise se.NoSuchOptionException("Question "+self.question.qId+" does not contain option \""+opText+'\"')
 
@@ -91,8 +91,8 @@ class Constraint:
 
     def __str__(self):
         output = "Constraint ID: "+self.cid+"\n"+"branches: \n"
-        for (opid, blockID) in self.constraintMap:
-            output = output+"\t"+str((opid, blockID))+"\n"
+        for (o, b) in self.constraintMap:
+            output = output+"\t"+str((o, b))+"\n"
         return output
 
     def jsonize(self):

@@ -178,7 +178,7 @@ class ConstraintTests(unittest.TestCase):
         self.constraint.add_branch_by_op_text("0", self.outer_block_2)
         self.constraint.add_branch(self.q.options[2], b1)
         self.constraint.add_branch_by_index(3, b2)
-        self.assertItemsEqual(self.constraint.get_blocks(), [self.outer_block_2.blockId, b1.blockId, b2.blockId, constraints.NEXT])
+        self.assertItemsEqual(self.constraint.get_blocks(), [self.outer_block_2, b1, b2, blocks.NEXTBLOCK])
 
     def test_jsonize(self):
         b1, b2 = blocks.Block([]), blocks.Block([])

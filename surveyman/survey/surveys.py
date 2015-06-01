@@ -1,8 +1,7 @@
 __author__ = "mmcmahon13"
 
 import json
-from .constraints import NEXT
-from .blocks import get_farthest_ancestor, NEXTBLOCK
+from .blocks import get_farthest_ancestor, NEXTBLOCK, NEXT
 from __ids__ import *
 from .survey_exceptions import *
 

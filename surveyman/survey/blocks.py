@@ -4,6 +4,8 @@ import questions
 import survey_exceptions as se
 import constraints
 
+NEXT = "NEXT"
+
 __blockGen__ = IdGenerator("b_")
 __branch_one__ = "branch-one"
 __branch_all__ = "branch-all"
@@ -256,7 +258,7 @@ class Block:
 
 class NEXTBLOCK(Block):
 
-    blockId = constraints.NEXT
+    blockId = NEXT
 
     def __init__(self):
         raise Exception("NEXTBLOCK is used as a token; should never be instantiated.")
