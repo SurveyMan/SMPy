@@ -29,3 +29,7 @@ Requirements
 Contributors
 ===========
 This library is primarily the work of @mmcmahon13, with guidance and packaging help from @etosch.
+
+License
+=======
+Apache 2.0
