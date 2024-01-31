@@ -1,9 +1,10 @@
-__author__ = "mmcmahon13"
-
-import json
+import ujson as json
 from .blocks import get_farthest_ancestor, NEXTBLOCK, NEXT
-from __ids__ import *
+from . import IdGenerator
 from .survey_exceptions import *
+import dominate
+import dominate.tags as tags
+from typing import List, Tuple
 
 __surveyGen__ = IdGenerator("s")
 
@@ -15,7 +16,7 @@ class Survey:
     "breakoff" indicates whether the user can quit the survey early
     """
 
-    def __init__(self, blocklist, constraints, breakoff=True):
+    def __init__(self, blocklist, constraints, breakoff=True, surveyID=None):
         """
         Creates a Survey object with a unique id.
         The block list and branch lists are required arguments
@@ -26,7 +27,8 @@ class Survey:
         :param breakoff: Boolean value indicating the ability to submit results early
         """
         # generate ID
-        self.surveyID = __surveyGen__.generateID()
+        self.surveyID = surveyID or __surveyGen__.generateID()
+
         # survey is a list of blocks, which hold questions and subblocks
         # at least one block with all the questions in it
         self.blockList = blocklist
@@ -76,7 +78,6 @@ class Survey:
         # check that all branches branch forward
         for c in self.constraints:
             branch_question = c.question
-            # print branchQuestion.block
             topmost_enclosing_block = get_farthest_ancestor(branch_question.block)
             for block in c.get_blocks():
                 if topmost_enclosing_block not in self.blockList:
@@ -98,14 +99,136 @@ class Survey:
         :return: JSON object according to the `Survey Schema <http://surveyman.github.io/Schemata/survey_input.json>`_
         """
         self.validate()
-        __survey__ = "survey"
-        __breakoff__ = "breakoff"
+        __survey__      = "survey"
+        __breakoff__    = "breakoff"
         __correlation__ = "correlation"
         __otherValues__ = "otherValues"
 
-        output = {__survey__: [json.loads(b.jsonize()) for b in self.blockList],
-                  __breakoff__: self.hasBreakoff,
+        output = {__survey__     : [json.loads(b.jsonize()) for b in self.blockList],
+                  __breakoff__   : self.hasBreakoff,
                   __correlation__: {},
                   __otherValues__: {}}
 
         return json.dumps(output)
+    
+    
+    def distribute(self, 
+                   exclude_instructional=False, 
+                   skipids=[],
+                   replacements=[],
+                   links:   List[Tuple[str, str]] = [], 
+                   scripts: List[Tuple[str, str]] = []) -> tags.div:
+        """Produces an html snippet for use in a distributable webpage for the purpose of sharing the survey instrument ahead of time with participants."""
+        import re
+        doc = dominate.document(title='Survey Preview')
+
+        remaining_postext = []
+
+        def parse(txt, tagstack=[]):
+            m = re.match('(.*?)<(/?)(\w+)(\s+.*?)?\s*(/?)\s*>(.*)', txt)
+            if m is None:
+                return [txt]
+            
+            pretext, close, tag, attrs, nomatch, posttext = m.groups()
+            remaining_postext.pop() if len(remaining_postext) > 0 else None
+            remaining_postext.append(posttext)
+            
+            if nomatch:
+                elts = parse(posttext, tagstack)
+                return [pretext or '',
+                        eval(f'tags.{tag}({attrs or ""})'),
+                        *elts
+                        ]
+            if close:
+                assert tag == tagstack[-1]
+                return [pretext]
+            
+            else:
+                inner = parse(posttext, tagstack=tagstack+[tag])
+                elt = eval(f'tags.{tag}({attrs or ""})')
+                for i in inner:
+                    elt.add(i)
+                return [pretext or '',
+                        elt,
+                        *parse(remaining_postext[0], tagstack=tagstack)
+                        ]
+                        
+        def text_replace(txt, replacements):
+            if replacements:
+                return text_replace(txt.replace(*replacements[0]), replacements[1:])
+            else: return txt
+
+        with doc.head:
+            for (rel, href) in links:
+                tags.link(rel=rel, href=href)
+            for (_type, src) in scripts:
+                tags.script(type=_type, src=src)
+            tags.meta(charset="UTF-8")
+            # move this external
+            tags.style(""".SMSurvey{
+                       max-width:1024px;
+                       width:100%;
+            }
+                       .SMBlock {
+                       outline-style:solid;
+                       outline-width:3pt;
+                       padding: 2pt 2pt 2pt 2pt;
+                       margin: 3pt 3pt 3pt 3pt;
+                       }
+                       .SMBlock_description {
+                        font-size: 20pt;
+                        background: black;
+                        color: white;
+                        padding: 4pt 4pt 4pt 4pt;
+                        margin: 0pt 0pt 2pt 0pt;
+                       }
+                       .SMQuestion {
+                       font-size:14pt;
+                       outline-style:solid;
+                       outline-width:1pt;
+                        padding: 2pt 2pt 2pt 2pt;
+                       margin: 3pt 3pt 3pt 3pt;
+
+                       }
+                       .SMOption {
+                       font-size:12pt;
+                       }
+                       """)
+            tags.script(r"""
+function options_onclick(qid) {
+    var view = document.getElementById("view_" + qid);
+    var opts = document.getElementById("opts_" + qid);
+                        
+    toggle_map = {'none': 'block', 'block' : 'none'};
+    button_map = {'View options' : 'Hide options', 'Hide options' : 'View options'};
+    view.textContent = button_map[view.textContent];
+    opts.style.display = toggle_map[opts.style.display];
+}""")
+        
+        with doc.body:
+            with tags.div(_id=self.surveyID, _class='SMSurvey'):
+                # flatten top-level blocks
+                for block in self.blockList:
+                    if block.blockId in skipids: continue
+                    with tags.div(id=block.blockId, cls='SMBlock'):
+                        if block.description:
+                            tags.div(text_replace(block.description, replacements), 
+                                     id=block.blockId, cls='SMBlock_description')
+                        for question in block.get_questions():
+                            if question.qId in skipids: continue
+                            content = [c for c in parse(text_replace(question.qText, replacements)) if c]
+                            with tags.div(id=question.qId, cls='SMQuestion') as qelements:
+                                qelements.add(*content)
+                                if question.qType in ['oneof', 'likert', 'checkbox']:
+                                    qelements.add(tags.button("View options", 
+                                                                style='display:block;', 
+                                                                id=f'view_{question.qId}', 
+                                                               _onclick=f'options_onclick("{question.qId.strip()}")'))
+                                    qelements.add(tags.ul(
+                                        *[tags.li(text_replace(o.opText, replacements)) for o in question.options],
+                                        id=f'opts_{question.qId}',
+                                        cls='SMOption',
+                                        style='display:none;'))
+        
+        return doc
+    

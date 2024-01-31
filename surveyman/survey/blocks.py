@@ -1,8 +1,8 @@
 import json
-from __ids__ import *
-import questions
-import survey_exceptions as se
-import constraints
+from . import IdGenerator
+from . import questions
+from . import survey_exceptions as se
+from . import constraints
 
 NEXT = "NEXT"
 
@@ -72,7 +72,7 @@ class Block:
     Contains the components of a survey Block. A block can hold both questions and sub-blocks.
     """
 
-    def __init__(self, contents, randomize=False):
+    def __init__(self, contents, randomize=False, description=None, blockId=None):
         """
         Creates a Block object.
         Blocks are a list of contents which could be either subblocks or questions.
@@ -83,11 +83,12 @@ class Block:
         :return:
         """
         self.contents = contents
-        self.blockId = __blockGen__.generateID()
+        self.blockId = blockId or __blockGen__.generateID()
         self.randomize = randomize
         self.__subblock_ids()
         self.__label_questions()
         self.parent = None
+        self.description = description
 
     def __subblock_ids(self):
         """
@@ -164,6 +165,8 @@ class Block:
         for c in self.contents:
             if isinstance(c, questions.Question):
                 my_questions.append(c)
+            elif isinstance(c, Block):
+                my_questions.extend(c.get_questions())
         return my_questions
 
     # rethinking how this is done, may move check to Survey object instead

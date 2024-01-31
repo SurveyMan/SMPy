@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools >=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name="SMPy"
+authors=[
+    {name = "Emma Tosch", email = "etosch@cs.umass.edu"},
+    {name = "Molly McMahon", email="mmcmahon@cs.umass.edu"}
+]
+description='Python front-end to the SurveyMan Language and Runtime'
+readme = "README.rst"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.pacakges.find]
+where = ["data"]

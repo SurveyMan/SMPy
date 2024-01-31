@@ -1,10 +1,10 @@
 import json
 from abc import ABCMeta
 from tidylib import tidy_fragment
-import __ids__
+from . import IdGenerator
 from surveyman.survey.survey_exceptions import HTMLValidationException
 
-__opGen__ = __ids__.IdGenerator("comp_")
+__opGen__ = IdGenerator("comp_")
 
 
 class Option:
@@ -17,7 +17,7 @@ class Option:
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, op_text):
+    def __init__(self, op_text, opId=None):
         """
         Creates an Option object with a unique id and the specified option text
         :param op_text:  The text to display (may be HTML)
@@ -26,7 +26,7 @@ class Option:
         # initialize option text field
         self.opText = op_text
         # generate id for option
-        self.opId = __opGen__.generateID()
+        self.opId = opId or __opGen__.generateID()
 
     def __eq__(self, other):
         """
@@ -72,7 +72,7 @@ class HTMLOption(Option):
         document, errors = tidy_fragment("<!DOCTYPE html><html><head><title></title><body>%s</body></html>" % op_html)
         # python is stupid
         if len(errors) > 1:
-            print errors
+            print(errors)
             raise HTMLValidationException()
         else:
             Option.__init__(self, op_html)

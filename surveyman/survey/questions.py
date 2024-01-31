@@ -1,11 +1,11 @@
 import json
 import re
-import __ids__
-import options
-import survey_exceptions as se
-import blocks
+from . import IdGenerator
+from . import options
+from . import survey_exceptions as se
+from . import blocks
 
-__qGen__ = __ids__.IdGenerator("q_")
+__qGen__ = IdGenerator("q_")
 __likert__ = "likert"
 __checkbox__ = "checkbox"
 __oneof__ = "oneof"
@@ -33,7 +33,7 @@ class Question:
     Contains the components of a survey question. SurveyMan presents questions one at a time.
     """
 
-    def __init__(self, qType, qText, options=[], shuffle=True, freetext=None, breakoff=True):
+    def __init__(self, qType, qText, options=[], shuffle=True, freetext=None, breakoff=True, qID = None):
         """
         Creates a Question object with a unique id.
         Question type, text, and a list of options must be specified
@@ -51,7 +51,7 @@ class Question:
         # initialize variables depending on how many arguments provided
         # if you don't want to add options immediately, add empty list as argument
         #call generateID
-        self.qId = __qGen__.generateID()
+        self.qId = qID or __qGen__.generateID()
         if qType not in qTypes:
             raise se.NoSuchQuestionTypeException("%s not in {%s}" % (qType, ",".join(qTypes)))
         else:
@@ -122,8 +122,7 @@ class Question:
         return text
 
     def __repr__(self):
-        return "Question(%s, %s, options=[%s], shuffle=%b, freetext=%s, breakoff=%b)" % (
-            self.qType, self.qText, ",".join(self.options), self.shuffle, self.freetext, self.breakoff)
+        return f'Question({self.qType}, {self.qText}, options=[{",".join(self.options)}], shuffle={self.shuffle}, freetext={self.freetext}, breakoff={self.breakoff})'
 
     def jsonize(self):
         """

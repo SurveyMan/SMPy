@@ -1,8 +1,5 @@
 import json
-from __ids__ import *
-import questions
-import survey_exceptions as se
-import blocks
+from . import IdGenerator, questions, survey_exceptions as se, blocks
 
 __constraintGen__ = IdGenerator("c_")
 

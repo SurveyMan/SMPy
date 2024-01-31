@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Survey Preview</title>
+    <meta charset="UTF-8">
+    <style>.SMSurvey{
+                       max-width:1024px;
+                       width:100%;
+            }
+                       .SMBlock {
+                       outline-style:solid;
+                       outline-width:3pt;
+                       padding: 2pt 2pt 2pt 2pt;
+                       margin: 3pt 3pt 3pt 3pt;
+                       }
+                       .SMBlock_description {
+                        font-size: 20pt;
+                        background: black;
+                        color: white;
+                        padding: 4pt 4pt 4pt 4pt;
+                        margin: 0pt 0pt 2pt 0pt;
+                       }
+                       .SMQuestion {
+                       font-size:14pt;
+                       outline-style:solid;
+                       outline-width:1pt;
+                        padding: 2pt 2pt 2pt 2pt;
+                       margin: 3pt 3pt 3pt 3pt;
+
+                       }
+                       .SMOption {
+                       font-size:12pt;
+                       }
+                       </style>
+    <script>
+function options_onclick(qid) {
+    var view = document.getElementById('view_' + qid);
+    var opts = document.getElementById('opts_' + qid);
+                        
+    toggle_map = {'none': 'block', 'block' : 'none'};
+    button_map = {'View options' : 'Hide options', 'Hide options' : 'View options'};
+    view.textContent = button_map[view.textContent];
+    opts.style.display = toggle_map[opts.style.display];
+}</script>
+  </head>
+  <body>
+    <div class="SMSurvey" id="SV_3xXTZdplvgdzJaK">
+      <div class="SMBlock" id="BL_6KbktLsXEJkrS0C">
+        <div class="SMBlock_description" id="BL_6KbktLsXEJkrS0C">Basic Information</div>
+        <div class="SMQuestion" id="QID70">What Mastodon server are you an administrator for? <br><br><i>If you are an administrator on 
+            <b>more than one instance</b>, reply with the name of the server from our 
+            <b>recruitment email</b>
+          </i>.</div>
+        <div class="SMQuestion" id="QID2">How long have you been an administrator for 
+          <span style="font-family:monospace">${your instance}</span>?
+          <button id="view_QID2" onclick="options_onclick('QID2')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID2" style="display:none;">
+            <li>Less than 6 months</li>
+            <li>6 months – 1 year</li>
+            <li>1 – 3 years</li>
+            <li>5 – 7 years</li>
+            <li>3 – 5 years</li>
+            <li>7 – 9 years</li>
+            <li>More than 9 years</li>
+            <li>I do not recall</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID87">In what year was 
+          <span style="font-family:monospace">${your instance}</span> established?
+          <button id="view_QID87" onclick="options_onclick('QID87')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID87" style="display:none;">
+            <li>2023</li>
+            <li>2022</li>
+            <li>2021</li>
+            <li>2019</li>
+            <li>2020</li>
+            <li>2018</li>
+            <li>2017</li>
+            <li>2016</li>
+            <li>2015</li>
+            <li>2014</li>
+            <li>Before 2014</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID4">Are you an administrator on any other Mastodon servers?
+          <button id="view_QID4" onclick="options_onclick('QID4')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID4" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID5">How many other Mastodon servers are you an administrator on?
+          <button id="view_QID5" onclick="options_onclick('QID5')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID5" style="display:none;">
+            <li>0</li>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>Greater than 3</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID11">Please list the names of the top 3 other Mastodon servers for which you are an administrator, if you feel comfortable doing so.</div>
+      </div>
+      <div class="SMBlock" id="BL_eQkqG3yRnO4VpuC">
+        <div class="SMBlock_description" id="BL_eQkqG3yRnO4VpuC">Policy Compliance</div>
+        <div class="SMQuestion" id="QID56">Have you or your team ever gotten a request to share information about the content, users, or usage of 
+          <span style="font-family:monospace">${your instance}</span>?<br>
+          <button id="view_QID56" onclick="options_onclick('QID56')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID56" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I think so</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID64">Have you or your team ever needed to invoke 
+          <span style="font-family:monospace">${your instance}</span>’s privacy policy in your capacity as an administrator of it?<br>
+          <button id="view_QID64" onclick="options_onclick('QID64')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID64" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID65">Have any members of 
+          <span style="font-family:monospace">${your instance}</span> raised privacy issues with you or your team?
+          <button id="view_QID65" onclick="options_onclick('QID65')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID65" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID66">Have any members of 
+          <span style="font-family:monospace">${your instance}</span> asked questions regarding your privacy policy?
+          <button id="view_QID66" onclick="options_onclick('QID66')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID66" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+      </div>
+      <div class="SMBlock" id="BL_4HPfh9T98HZioHs">
+        <div class="SMBlock_description" id="BL_4HPfh9T98HZioHs">Data Management Experience</div>
+        <div class="SMQuestion" id="QID61">Do you have any background or prior experience in data management?
+          <button id="view_QID61" onclick="options_onclick('QID61')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID61" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>What's data management?</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID63">Please select the 
+          <b>
+            <u>data management issues, concerns, or techniques</u>
+          </b> that 
+          <b>
+            <u>you are familiar with</u>
+          </b>.<br>
+          <button id="view_QID63" onclick="options_onclick('QID63')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID63" style="display:none;">
+            <li>PII</li>
+            <li>Secure servers</li>
+            <li>Airgapping</li>
+            <li>Differential privacy</li>
+            <li>TLS</li>
+            <li>De-identification</li>
+            <li>GDPR compliance</li>
+            <li>CORI compliance</li>
+            <li>COPPA compliance</li>
+            <li>CCPA compliance</li>
+            <li>CPRA compliance</li>
+            <li>Encryption</li>
+            <li>Databases</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID58">In what contexts 
+          <b><i>other than Mastodon</i></b> have you had experience in data management? Please check all that apply.<br>
+          <button id="view_QID58" onclick="options_onclick('QID58')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID58" style="display:none;">
+            <li>Work (industrial)</li>
+            <li>Work (medical)</li>
+            <li>Work (government)</li>
+            <li>Work (academic)</li>
+            <li>Personal</li>
+            <li>Other (please specify)</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID59">Do you have a background in or prior experience with collecting PII?<br>
+          <button id="view_QID59" onclick="options_onclick('QID59')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID59" style="display:none;">
+            <li>Yes, a lot</li>
+            <li>Yes, a little</li>
+            <li>No</li>
+            <li>What's PII?</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID91">Do you have a background in or prior experience with data encryption?<br>
+          <button id="view_QID91" onclick="options_onclick('QID91')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID91" style="display:none;">
+            <li>Yes, a lot</li>
+            <li>Yes, a little</li>
+            <li>No</li>
+            <li>What's encryption?</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID60">Is there any additional specific information you would like to share about your data management experience?</div>
+      </div>
+      <div class="SMBlock" id="BL_d6AeylYZdnXGur4">
+        <div class="SMBlock_description" id="BL_d6AeylYZdnXGur4">Consent to follow up</div>
+        <div class="SMQuestion" id="QID67">Would you be interested in participating in any follow-up studies at a later point in time, such as an extended interview or beta-testing policy authoring tools?<br>
+          <button id="view_QID67" onclick="options_onclick('QID67')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID67" style="display:none;">
+            <li>Yes</li>
+            <li>Maybe</li>
+            <li>No</li>
+          </ul>
+        </div>
+      </div>
+      <div class="SMBlock" id="BL_1MMiJDhmOPwXEdU">
+        <div class="SMBlock_description" id="BL_1MMiJDhmOPwXEdU">Follow up email</div>
+        <div class="SMQuestion" id="QID69">Is there a different email address you would like us to use for future contact?<br></div>
+      </div>
+      <div class="SMBlock" id="BL_bkjaz5CvHalNZau">
+        <div class="SMBlock_description" id="BL_bkjaz5CvHalNZau">End of survey</div>
+        <div class="SMQuestion" id="QID92">Clicking next will submit the survey. If you would like to modify your answers, please do so now.<br></div>
+      </div>
+      <div class="SMBlock" id="BL_2fsxq8puhpnGZcG">
+        <div class="SMBlock_description" id="BL_2fsxq8puhpnGZcG">Demographics</div>
+        <div class="SMQuestion" id="QID94">We will now ask you to self-report about your personal demographic characteristics. <br></div>
+        <div class="SMQuestion" id="QID95">Do you personally identify as having a <i>minoritized</i> or <i>marginalized</i> 
+          <b>identity</b>?
+          <button id="view_QID95" onclick="options_onclick('QID95')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID95" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I'm not sure</li>
+            <li>Decline to answer</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID97">Along what axes do you identify as having a <i>minoritized</i> or <i>marginalized</i> 
+          <b>identity</b>?<br>
+          <button id="view_QID97" onclick="options_onclick('QID97')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID97" style="display:none;">
+            <li>Gender identity or expression</li>
+            <li>Ethnicity or race</li>
+            <li>Sexual orientation or preference</li>
+            <li>Socioeconomic status</li>
+            <li>Culture, religion, or country of origin</li>
+            <li>Disability or neurodivergence</li>
+            <li>Other</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID102">There are specific demographic questions we ask when studying populations in the United States.<br>
+          <button id="view_QID102" onclick="options_onclick('QID102')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID102" style="display:none;"></ul>
+        </div>
+        <div class="SMQuestion" id="QID104">Please indicate which of the following 
+          <a href="https://www.census.gov/quickfacts/fact/note/US/RHI625222">U.S. Census racial categories</a> you identify as. <br>
+          <button id="view_QID104" onclick="options_onclick('QID104')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID104" style="display:none;">
+            <li>White</li>
+            <li>Black or African American</li>
+            <li>American Indian and Alaska Native</li>
+            <li>Asian</li>
+            <li>Native Hawaiian and Other Pacific Islander</li>
+            <li>Other</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID105">Please indicate whether or not you identify as having Latin American ethnicity, culture, or origins.<br>
+          <button id="view_QID105" onclick="options_onclick('QID105')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID105" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>Prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID107">Please indicate your gender identity, but only if you feel comfortable doing so.<br>
+          <button id="view_QID107" onclick="options_onclick('QID107')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID107" style="display:none;">
+            <li>Woman</li>
+            <li>Man</li>
+            <li>Prefer not to say</li>
+            <li>Nonbinary</li>
+            <li>Prefer to self-describe</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID108">If you feel comfortable sharing, let us know how often your gender identity aligns with your gender assignment at birth.
+          <button id="view_QID108" onclick="options_onclick('QID108')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID108" style="display:none;">
+            <li>Always</li>
+            <li>Never</li>
+            <li>Prefer not to say</li>
+            <li>Most of the time</li>
+            <li>Sometimes</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID100">Is there anything else you'd like to share about your identity?</div>
+      </div>
+      <div class="SMBlock" id="BL_6zXiR1PeHXpgRsW">
+        <div class="SMBlock_description" id="BL_6zXiR1PeHXpgRsW">Server Privacy Policy Familiarity</div>
+        <div class="SMQuestion" id="QID14">Were you involved in the initial crafting of 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy?
+          <button id="view_QID14" onclick="options_onclick('QID14')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID14" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not recall</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID12">How familiar are you with 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy?
+          <button id="view_QID12" onclick="options_onclick('QID12')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID12" style="display:none;">
+            <li>Not familiar at all</li>
+            <li>Somewhat familiar</li>
+            <li>Very familiar</li>
+            <li>Extremely familiar</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID71">When was the last time you read through 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy?
+          <button id="view_QID71" onclick="options_onclick('QID71')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID71" style="display:none;">
+            <li>Less than 6 months ago</li>
+            <li>6 months – 1 year ago</li>
+            <li>1 – 3 years ago</li>
+            <li>5 – 7 years ago</li>
+            <li>More than 11 years ago</li>
+            <li>3 – 5 years ago</li>
+            <li>7 – 9 years ago</li>
+            <li>9 – 11 years ago</li>
+            <li>Never</li>
+          </ul>
+        </div>
+      </div>
+      <div class="SMBlock" id="BL_agys3nlqMJMkKwe">
+        <div class="SMBlock_description" id="BL_agys3nlqMJMkKwe">Server Privacy Policy History: Reference Policy</div>
+        <div class="SMQuestion" id="QID15">Did you or someone on your team create 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy text by modifying or using the text of one or more existing privacy policies?<br>
+          <button id="view_QID15" onclick="options_onclick('QID15')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID15" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I think so</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID19">Other than the name of the server, did you or someone on your team make changes to the existing privacy policy when crafting 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy?<br>
+          <button id="view_QID19" onclick="options_onclick('QID19')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID19" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I think so</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID50">Other than the name of server, what kinds of changes did you make to the existing policy? Please check all that apply.<br>
+          <button id="view_QID50" onclick="options_onclick('QID50')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID50" style="display:none;">
+            <li>Made other cosmetic changes (e.g., formatting, css, logos/branding)</li>
+            <li>Added or removed links</li>
+            <li>Added information specific to the server's community</li>
+            <li>Added or removed accessibility features</li>
+            <li>Added or removed contact information</li>
+            <li>Removed statements I/we disagreed with</li>
+            <li>Removed statements that we could not or would not uphold</li>
+            <li>Removed statements that were not applicable to our community</li>
+            <li>Other (please describe)</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID23">Were there any existing policies you or your team considered but did not choose to use?<br>
+          <button id="view_QID23" onclick="options_onclick('QID23')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID23" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I think so</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID81">Please share why you or your team 
+          <b><i>did not</i></b> use certain other policies.<br>
+          <button id="view_QID81" onclick="options_onclick('QID81')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID81" style="display:none;">
+            <li>insufficiently addressed privacy concerns</li>
+            <li>permitted advertising</li>
+            <li>were not compatible with other policy documents (e.g., terms of service, code of conduct, business plan, community guidelines, etc.)</li>
+            <li>were too hard to understand</li>
+            <li>were unenforceable</li>
+            <li>put too much responsibility on server administrators</li>
+            <li>put too much responsibility on users</li>
+            <li>prohibited advertising</li>
+            <li>were not compliant with relevant laws</li>
+            <li>Other Reason (please describe)</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID24">What is/are the names or urls of the policy/policies on which 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy is based.<br>
+        </div>
+      </div>
+      <div class="SMBlock" id="BL_9mAdUzJ0wUMXxvo">
+        <div class="SMBlock_description" id="BL_9mAdUzJ0wUMXxvo">Server Privacy Policy History: Tool or Template</div>
+        <div class="SMQuestion" id="QID16">Did you or someone on your team create 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy using a tool or template service?<br>
+          <button id="view_QID16" onclick="options_onclick('QID16')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID16" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I think so</li>
+            <li>I prefer not to say</li>
+            <li>What's a tool or template service?</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID101">Please indicate which types tools you or your team used to generate 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy. <br>If you can be more specific, please enter the name(s) of the tool(s) you used.
+          <button id="view_QID101" onclick="options_onclick('QID101')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID101" style="display:none;">
+            <li>Large language model (e.g., GPT-4)</li>
+            <li>Policy generator website (e.g., Termly.io)</li>
+            <li>Default template via hosting service (e.g., Masto.host's privacy policy)</li>
+            <li>Other software</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID20">Did you or someone on your team make changes to the tool or template output?<br>
+          <button id="view_QID20" onclick="options_onclick('QID20')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID20" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I think so</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID49">What kinds of changes did or your team you make to the output of the tool? Please check all that apply.<br>
+          <button id="view_QID49" onclick="options_onclick('QID49')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID49" style="display:none;">
+            <li>Made other cosmetic changes (e.g., formatting, css, logos/branding)</li>
+            <li>Added or removed links</li>
+            <li>Added information specific to the server's community</li>
+            <li>Added or removed accessibility features</li>
+            <li>Added or removed contact information</li>
+            <li>Removed statements I/we disagreed with</li>
+            <li>Removed statements that we could not or would not uphold</li>
+            <li>Removed statements that were not applicable to our community</li>
+            <li>Other (please describe)</li>
+            <li>Added definitions of privacy-specific concepts</li>
+            <li>Added information about third party services</li>
+            <li>Removed information about third party services</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID25">Were there any tools or templates you or your team considered but did not use?<br>
+          <button id="view_QID25" onclick="options_onclick('QID25')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID25" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>I think so</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID32">Please share why you or your team 
+          <b><i>did not</i></b> use the other tools or templates you'd considered.<br>
+          <button id="view_QID32" onclick="options_onclick('QID32')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID32" style="display:none;">
+            <li>was/were paywalled (not gratis)</li>
+            <li>was/were proprietary (not libre)</li>
+            <li>insufficiently addressed privacy concerns</li>
+            <li>permitted advertising</li>
+            <li>were not compatible with other policy documents (e.g., terms of service, code of conduct, business plan, community guidelines, etc.)</li>
+            <li>were too hard to understand</li>
+            <li>were unenforceable</li>
+            <li>put too much responsibility on server administrators</li>
+            <li>put too much responsibility on users</li>
+            <li>prohibited advertising</li>
+            <li>were not compliant with relevant laws</li>
+            <li>Other Reason (please describe)</li>
+            <li>too proscriptive about third party services</li>
+            <li>too prescriptive about third party services</li>
+          </ul>
+        </div>
+      </div>
+      <div class="SMBlock" id="BL_5nlbm8ttm9xz9Cm">
+        <div class="SMBlock_description" id="BL_5nlbm8ttm9xz9Cm"> </div>
+        <div class="SMQuestion" id="QID47">Is there anything else you'd like to share about the origins of 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy?<br>
+        </div>
+      </div>
+      <div class="SMBlock" id="BL_cYkpSJtMgj0fXWC">
+        <div class="SMBlock_description" id="BL_cYkpSJtMgj0fXWC">Server Privacy Policy History: de novo</div>
+        <div class="SMQuestion" id="QID18">How much of 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy was written from scratch (by you or someone on your team)?<br>
+          <button id="view_QID18" onclick="options_onclick('QID18')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID18" style="display:none;">
+            <li>None</li>
+            <li>I do not know</li>
+            <li>I do not recall</li>
+            <li>Some</li>
+            <li>About half</li>
+            <li>Most</li>
+            <li>All</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID113">To the best of your knowledge, did any of 
+          <span style="font-family:monospace">${your instance}</span>'s privacy policy authors have background knowledge or experience in any of the following areas?
+          <button id="view_QID113" onclick="options_onclick('QID113')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID113" style="display:none;"></ul>
+        </div>
+      </div>
+      <div class="SMBlock" id="BL_3xSx5syc8CDRZye">
+        <div class="SMBlock_description" id="BL_3xSx5syc8CDRZye">Content Moderation Experience</div>
+        <div class="SMQuestion" id="QID52">Do you have any background or prior experience as a content moderator?
+          <button id="view_QID52" onclick="options_onclick('QID52')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID52" style="display:none;">
+            <li>Yes</li>
+            <li>No</li>
+            <li>What's content moderation?</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID53">On what platforms 
+          <b><i>other than Mastodon</i></b> have you had experience in content moderation? Please check all that apply.<br>
+          <button id="view_QID53" onclick="options_onclick('QID53')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID53" style="display:none;">
+            <li>Reddit</li>
+            <li>Facebook</li>
+            <li>Youtube</li>
+            <li>Wikipedia</li>
+            <li>Slashdot</li>
+            <li>Github</li>
+            <li>BBS/listserv (please specify context, if willing)</li>
+            <li>Other (please specify)</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID62">Please select the 
+          <b>
+            <u>content moderation issues</u>
+          </b> that 
+          <b>
+            <u>you have experience with</u>
+          </b>.<br>
+          <button id="view_QID62" onclick="options_onclick('QID62')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID62" style="display:none;">
+            <li>Hate speech</li>
+            <li>Cyberbullying</li>
+            <li>Harassment/Stalking</li>
+            <li>Doxxing</li>
+            <li>Disinformation</li>
+            <li>Misinformation</li>
+            <li>Spam</li>
+            <li>Scams</li>
+            <li>Sock puppets</li>
+            <li>Cryptocurrency</li>
+            <li>NFTs</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID54">Have you ever encountered (personally or as a witness) what you would personally consider to be a 
+          <b>privacy violation </b>as part of your content moderation experience? 
+          <button id="view_QID54" onclick="options_onclick('QID54')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID54" style="display:none;">
+            <li>Yes</li>
+            <li>Not sure</li>
+            <li>Definitely no</li>
+            <li>I do not recall</li>
+            <li>Possibly yes</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID82">To the best of your knowledge, was this privacy violation prohibited by the platform's 
+          <b>privacy policy</b>?<br>
+          <button id="view_QID82" onclick="options_onclick('QID82')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID82" style="display:none;">
+            <li>Yes</li>
+            <li>Not sure</li>
+            <li>Definitely no</li>
+            <li>I was not sufficiently familiar with the platform's privacy policy</li>
+            <li>Possibly yes</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID89">To the best of your knowledge, was this privacy violation prohibited by the platform's 
+          <b>code of conduct</b>?<br>
+          <button id="view_QID89" onclick="options_onclick('QID89')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID89" style="display:none;">
+            <li>Yes</li>
+            <li>Not sure</li>
+            <li>Definitely no</li>
+            <li>I was not sufficiently familiar with the platform's code of conduct</li>
+            <li>Possibly yes</li>
+            <li>I prefer not to say</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID90">Do you believe this privacy violation should have been covered in some way by the platform's governance documents? Select all that apply.<br>
+          <button id="view_QID90" onclick="options_onclick('QID90')" style="display:block;">View options</button>
+          <ul class="SMOption" id="opts_QID90" style="display:none;">
+            <li>Yes, in the privacy policy</li>
+            <li>Yes, in the terms of service</li>
+            <li>No</li>
+            <li>Not sure</li>
+            <li>Yes, in the code of conduct</li>
+            <li>Yes, other</li>
+          </ul>
+        </div>
+        <div class="SMQuestion" id="QID55">Is there any additional specific information you would like to share about your content moderation experience?</div>
+      </div>
+    </div>
+  </body>
+</html>
