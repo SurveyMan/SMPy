@@ -1,7 +1,9 @@
+source .venv/bin/activate
+pip install -r REQUIREMENTS.txt
 # because i have butter fingers and just nuked my history FML
 
 python -m surveyman.input \
-    ~/Downloads/Mastodon_Administrator_Questionnaire_811.qsf \
+    ./survey.json \
     qsf \
     --replacements \
     "&nbsp;-> " \

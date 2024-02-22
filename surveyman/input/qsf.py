@@ -60,6 +60,7 @@ class ProjectCategoryElement(Element): pass
 class SurveyStatisticsElement(Element): pass
 class QuestionElement(Element): pass
 class QuotaGroupElement(Element): pass
+class RSElement(Element): pass
 
 class DefaultBlockElement(BlockElement): pass
 class QuestionBlockElement(BlockElement): pass
@@ -74,7 +75,10 @@ class SurveyElement:
     PrimaryAttribute: str
     SecondaryAttribute: str | None
     TertiaryAttribute: str | None
-    Payload: Element 
+    Payload: dict | list | None
+
+    def payload(self) -> Element:
+        return Element.parse(self)
 
 
 class Element(ABC, dict): 
@@ -83,7 +87,7 @@ class Element(ABC, dict):
         'FL'  : FlowElement,
         'NT'  : NoteElement, 
         'PL'  : PreviewLinkElement, 
-        'RS'  : None, 
+        'RS'  : RSElement, 
         'SO'  : SurveyOptionsElement, 
         'QGO' : (QuotaGroupOrder, [0]), 
         'SCO' : ScoringCategoriesElement, 
@@ -100,7 +104,8 @@ class Element(ABC, dict):
         elif type(elt.Payload) is list:
             clz, keys = Element.codes[elt.Element]
             return clz(zip(keys, elt.Payload))
-        else: return None 
+        else: 
+            return Element.codes[elt.Element]()
 
 @dataclass
 class QuestionElement(Element):
@@ -124,10 +129,10 @@ class QuestionElement(Element):
     DisplayLogic: dict # encodes branching?
     Randomization: dict 
 
-    def get_surveyman_qtype(questionElement : QuestionElement):
+    def get_surveyman_qtype(self) -> str:
         # I should be able to access these as named fields, but right now that's not working.
-        a = questionElement['QuestionType']
-        b = questionElement['Selector']
+        a = self.QuestionType
+        b = self.Selector
 
         # MC   multiple choice
         # MAVR multiple answer vertical
@@ -145,7 +150,7 @@ class QuestionElement(Element):
         elif a == 'DB':
             return 'instruction'
         else:
-            raise ValueError('NYI'+str(questionElement))
+            raise ValueError('NYI'+str(self))
 
 @dataclass
 class QuotaGroupElement(Element):
@@ -287,10 +292,27 @@ class SMQualtricsQuestion(Question):
 
 class SMQualtricsSurvey(surveys.Survey):
 
-    def __init__(self, surveyEntry, surveyElements):
+    def __init__(self, 
+                 surveyEntry : dict, 
+                 surveyElements : list):
         surveyEntry    = SurveyEntry(**surveyEntry)
         surveyElements = [SurveyElement(**elt) for elt in surveyElements]
-        blocklist      = SMQualtricsSurvey.extractBlocklist(surveyElements, surveyEntry.SurveyID)
+
+        elements = defaultdict(list)
+        for elt in surveyElements:
+            p = elt.payload()
+            elements[type(p).__name__].append((elt, p))
+
+        for k, v in elements.items():
+            print(k, len(v))
+
+        assert len(elements[BlockListElement.__name__])  == 1
+        assert len(elements[QuestionElement.__name__]) > 1
+
+        blocklist      = SMQualtricsSurvey.extractBlocklist(
+            [bl for (_, bl) in elements[BlockListElement.__name__]], 
+            [qe for (_, qe) in elements[QuestionElement.__name__]], 
+            surveyEntry.SurveyID)
         constraints    = SMQualtricsSurvey.extractConstraints(surveyElements)
         breakoff       = SMQualtricsSurvey.detectBreakoff(surveyElements)
         
@@ -298,28 +320,23 @@ class SMQualtricsSurvey(surveys.Survey):
         
         self.SurveyEntry = surveyEntry
 
-    def extractBlocklist(surveyElements: list, id: str) -> List[Block]:
-        parsed_elements = defaultdict(list)
-        for elt in surveyElements:
-            parsed_elements[elt.Element].append(Element.parse(elt))
+    def extractBlocklist(blocks: List[BlockListElement],
+                         questions: List[QuestionElement],
+                         id: str) -> List[Block]:
+        print(len(questions), questions[0], type(questions[0]), questions[0].__class__)
+        questions = {q.QuestionID : SMQualtricsQuestion(q) for q in questions}
+        
+        exit(1)
 
-        questions = {q['QuestionID'] : SMQualtricsQuestion(q) for q in parsed_elements['SQ']}
-
-        blocks=[]
-        for blocklist in parsed_elements['BL']:
-            for i, block in blocklist.items():
-                pass
-
-        for blocklist in parsed_elements['BL']:
+        for blocklist in blocks:
             # is the default block always located at 0?
             for _, block in sorted(blocklist.items(), key= lambda tupe: tupe[0]):
-                description = block['Description']
+                description = block.Description
                 qs = []
-                for obj in block['BlockElements']:
-                    if 'QuestionID' in obj:
-                        qid = obj['QuestionID']
-                        qs.append(questions[qid])
-                blocks.append(Block(qs, description=description, blockId=block['ID']))
+                for obj in block.BlockElements:
+                    qid = obj.QuestionID
+                    qs.append(questions[qid])
+                blocks.append(Block(qs, description=description, blockId=block.ID))
         
         return blocks
     
@@ -339,5 +356,5 @@ def parse(text:str = None, file:str = None) -> surveys.Survey:
     else:
         raise ValueError('Need one of text or file input')
     
-    return SMQualtricsSurvey(jsobj['SurveyEntry'], jsobj['SurveyElements'])
+    return SMQualtricsSurvey(*jsobj.values())
         
