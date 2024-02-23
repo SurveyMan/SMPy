@@ -16,7 +16,7 @@ class Survey:
     "breakoff" indicates whether the user can quit the survey early
     """
 
-    def __init__(self, blocklist, constraints, breakoff=True, surveyID=None):
+    def __init__(self, blocklist, constraints, breakoff=True, surveyID=None, name=None):
         """
         Creates a Survey object with a unique id.
         The block list and branch lists are required arguments
@@ -28,6 +28,7 @@ class Survey:
         """
         # generate ID
         self.surveyID = surveyID or __surveyGen__.generateID()
+        self.name = name or ""
 
         # survey is a list of blocks, which hold questions and subblocks
         # at least one block with all the questions in it
@@ -165,15 +166,23 @@ class Survey:
                 tags.script(type=_type, src=src)
             tags.meta(charset="UTF-8")
             # move this external
-            tags.style(""".SMSurvey{
-                       max-width:1024px;
+            tags.style("""body { background-color: yellow; }
+                       .SMSurvey{
+                       max-width:1024;
                        width:100%;
             }
+                       .SMInstructions {
+                       width:100%;
+                       padding: 5pt 5pt 5pt 5pt;
+                       font-size: 22pt;
+                       font-family: sans-serif;
+                       }
                        .SMBlock {
                        outline-style:solid;
                        outline-width:3pt;
                        padding: 2pt 2pt 2pt 2pt;
                        margin: 3pt 3pt 3pt 3pt;
+                       background-color: white;
                        }
                        .SMBlock_description {
                         font-size: 20pt;
@@ -193,8 +202,35 @@ class Survey:
                        .SMOption {
                        font-size:12pt;
                        }
+
+                       .oneof {
+                         list-style-type: '⚬';
+                            padding-inline-start: 1cm;
+                       }
+
+                    .likert {
+                         list-style-type: '⚬';
+                            padding-inline-start: 1cm;
+                       }
+
+                    .checkbox {
+                        list-style-type: '☐';
+                        padding-inline-start: 1cm;
+                       }
+
+                    }
+
                        """)
             tags.script(r"""
+function section_onclick(bid) {
+    var view = document.getElementById("view_" + bid);
+    var ques = document.getElementById("ques_"+bid);
+                        
+    toggle_map = {'none': 'block', 'block' : 'none'};
+    button_map = {'View questions' : 'Hide questions', 'Hide questions' : 'View questions'};
+    view.textContent = button_map[view.textContent];
+    ques.style.display = toggle_map[ques.style.display];                       
+}
 function options_onclick(qid) {
     var view = document.getElementById("view_" + qid);
     var opts = document.getElementById("opts_" + qid);
@@ -206,29 +242,43 @@ function options_onclick(qid) {
 }""")
         
         with doc.body:
+            with tags.div(_id='instructions', _class='SMInstructions'):
+                tags.p(f'This is an HTML preview of the content of the {self.name} survey.')
+                tags.p('This document is meant to give the survey-taker a sense of the nature of the questions and potential flows through the survey.')
+                tags.p('The questions you see, the wording, and the formatting may all differ from your actual experience.')
             with tags.div(_id=self.surveyID, _class='SMSurvey'):
                 # flatten top-level blocks
                 for block in self.blockList:
                     if block.blockId in skipids: continue
                     with tags.div(id=block.blockId, cls='SMBlock'):
-                        if block.description:
-                            tags.div(text_replace(block.description, replacements), 
-                                     id=block.blockId, cls='SMBlock_description')
-                        for question in block.get_questions():
-                            if question.qId in skipids: continue
-                            content = [c for c in parse(text_replace(question.qText, replacements)) if c]
-                            with tags.div(id=question.qId, cls='SMQuestion') as qelements:
-                                qelements.add(*content)
-                                if question.qType in ['oneof', 'likert', 'checkbox']:
-                                    qelements.add(tags.button("View options", 
-                                                                style='display:block;', 
-                                                                id=f'view_{question.qId}', 
-                                                               _onclick=f'options_onclick("{question.qId.strip()}")'))
-                                    qelements.add(tags.ul(
-                                        *[tags.li(text_replace(o.opText, replacements)) for o in question.options],
-                                        id=f'opts_{question.qId}',
-                                        cls='SMOption',
-                                        style='display:none;'))
+                        with tags.div(id=f'desc_{block.blockId}', cls='SMBlock_description') as descbar:
+                            if block.description:
+                                descbar.add(text_replace(block.description, replacements))
+                            # tags.button("View questions", 
+                            #         style='display:block;background-color:lightgray;', 
+                            #         id=f'view_{block.blockId}', 
+                            #         cls='SMBLock_description',
+                            #         _onclick=f'block_onclick("{block.blockId.strip()}")')
+                        with tags.div(id=f'ques_{block.blockId}'):#, style='display:none;'):
+                            for question in block.get_questions():
+                                if question.qId in skipids: continue
+                                content = [c for c in parse(text_replace(question.qText, replacements)) if c]
+                                with tags.div(id=question.qId, cls='SMQuestion') as qelements:
+                                    qelements.add(*content)
+                                    if question.qType == 'freetext':
+                                        qelements.add(tags.br())
+                                        qelements.add(tags.textarea(_readonly=True, style='resize:none;'))
+                                    if question.qType in ['oneof', 'likert', 'checkbox']:
+                                        qelements.add(tags.button("View options", 
+                                                                    style='display:block;color:white;background-color:darkgray;', 
+                                                                    id=f'view_{question.qId}', 
+                                                                   _onclick=f'options_onclick("{question.qId.strip()}")'))
+                                        qelements.add(tags.ul(
+                                            *[tags.li(text_replace(o.opText, replacements)) for o in question.options],
+                                            id=f'opts_{question.qId}',
+                                            cls=f'SMOption {question.qType}',
+                                            style='display:none;'
+                                            ))
         
         return doc
     
