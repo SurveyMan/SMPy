@@ -8,7 +8,7 @@ from ..survey.constraints import Constraint
 from ..survey.options import Option
 from dataclasses import dataclass, field
 from datetime import date
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from collections import defaultdict
 import re
 
@@ -83,6 +83,27 @@ def parse_payload(elt: SurveyElement):
 
 class RSElement: pass
 
+class StrIntDict(dict):
+    # Dictionary that coreces keys to strings
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, __key: Any) -> Any:
+        return super().__getitem__(str(__key))
+        
+    def __setitem__(self, __key: Any, __value: Any) -> None:
+        return super().__setitem__(str(__key), __value)
+
+@dataclass
+class ChoiceElement:
+    Display : str
+    TextEntry : Optional[bool] = False
+
+    def __post_init__(self):
+        if self.TextEntry == 'true': 
+            self.TextEntry = True
+        if self.TextEntry == 'false':
+            self.TextEntry = False
 
 @dataclass(kw_only=True)
 class QuestionElement:
@@ -100,7 +121,8 @@ class QuestionElement:
     Selector: str 
     Validation: dict
     ChoiceDataExportTags : Optional[dict] = None
-    Choices: Optional[Dict[StrInt, Dict]] = field(default_factory=dict) # map from string ints to another map with the keys 'Display' for display text and 'TextEntry' bool
+    Choices: Optional[StrIntDict] = field(default_factory=StrIntDict)
+    Answers : Optional[StrIntDict] = field(default_factory=StrIntDict)
     ChoiceOrder: Optional[List[StrInt]] = field(default_factory=list)
     DataVisibility: Optional[dict] = field(default_factory=lambda : {'Private': False, 'Hidden': False})
     DisplayLogic: Optional[dict] = field(default_factory=dict) # encodes branching?
@@ -111,20 +133,27 @@ class QuestionElement:
     Randomization: Optional[dict] = None
     SearchSource : Optional[str] = None
     SubSelector : Optional[str] = None
-    Answers : Optional[dict] = None
     AnswerOrder : Optional[dict] = None
+
+    def __post_init__(self):
+        print(self.Choices)
+        self.Choices = StrIntDict({k : ChoiceElement(**v) for k, v in self.Choices.items()})
+        print(self.Choices)
+        self.Answers = StrIntDict({k : ChoiceElement(**v) for k, v in self.Answers.items()})
 
 def get_surveyman_qtype(self : QuestionElement) -> str:
     # I should be able to access these as named fields, but right now that's not working.
     a = self.QuestionType
     b = self.Selector
+    c = self.SubSelector
 
     # MC   multiple choice
     # MAVR multiple answer vertical
     # SAVR single answer vertical
     # SAHR single answer horizontal
     
-    if a == 'MC' and b == 'MAVR':
+    if (a == 'MC' and b == 'MAVR') or \
+        (a == 'Matrix' and c == 'MultipleAnswer') :
         return 'checkbox'
     elif a == 'MC' and b in ['SAVR', 'SAHR', 'DL']:
         return 'oneof'
@@ -211,7 +240,7 @@ class SurveyOptionsElement:
     SurveyLinkCompletedMessage: str | None
     SurveyLinkCompletedMessageLibrary: str | None
     SurveyMetaDescription: str 
-    SurveyName : str
+    #SurveyName : str
     SurveyProtection: str # byInvitation
     SurveyTermination: str
     SurveyTitle: str
@@ -297,7 +326,6 @@ class BlockElement:
     SubType: Optional[str] = None
 
     def __post_init__(self):
-        print(self.BlockElements)
         elttypes = [BlockElementType(**e) for e in self.BlockElements]
         self.BlockElements = elttypes
 
@@ -308,7 +336,6 @@ class BlockListElement(dict):
             try:
                 self[k] = BlockElement(**v)
             except Exception as e:
-                print(v.keys())
                 raise e
             
     def __iter__(self):
@@ -320,8 +347,16 @@ class SMQualtricsQuestion(Question):
     def __init__(self, obj: QuestionElement):
         qtype = get_surveyman_qtype(obj)
         options = []
-        if obj.QuestionType == 'MC':
-            options = [Option(o['Display']) for o in obj.Choices.values()]
+        if obj.QuestionType in ['MC', 'Matrix']:
+            options = []
+            for k in obj.ChoiceOrder:
+                o = obj.Choices[k]
+                if obj.QuestionType == 'Matrix':
+                    for ans in obj.Answers.values():
+                        options.append(Option(f'{o.Display} – {ans.Display}',
+                                              user_text=o.TextEntry))
+                else:
+                    options.append(Option(o.Display, user_text=o.TextEntry))
         super().__init__(qtype, 
                          obj.QuestionText,
                          options=options,
@@ -360,7 +395,6 @@ class SMQualtricsSurvey(surveys.Survey):
                          questions: List[QuestionElement],
                          id: str
                          ) -> List[Block]:
-        print(len(questions), questions[0], type(questions[0]), questions[0].__class__)
         questions = {q.QuestionID : SMQualtricsQuestion(q) for q in questions}
         
         blocks = []

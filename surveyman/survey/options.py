@@ -17,14 +17,16 @@ class Option:
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, op_text, opId=None):
+    def __init__(self, op_text, user_text= False, opId=None):
         """
         Creates an Option object with a unique id and the specified option text
         :param op_text:  The text to display (may be HTML)
         :return:
         """
         # initialize option text field
+        assert type(op_text) is str, op_text
         self.opText = op_text
+        self.userText = user_text
         # generate id for option
         self.opId = opId or __opGen__.generateID()
 
