@@ -2,6 +2,8 @@ source .venv/bin/activate
 pip install -r REQUIREMENTS.txt
 # because i have butter fingers and just nuked my history FML
 
+alias python=python3
+
 python -m surveyman.input \
     ./survey.json \
     qsf \
@@ -11,6 +13,8 @@ python -m surveyman.input \
     "&ndash;->–" \
     --skipids \
     QID86 \
+    QID101 \
+    QID94 \
     BL_5d4c2fb3vCiWk4K \
     BL_cSURw3ZgzbsVymi \
     BL_ehNOJQlLWNb4GBU \
